@@ -10,6 +10,6 @@ from app.resources import service as resources_service
 
 router = APIRouter()
 
-@router.post('/resources/createservice')
+@router.post('/services')
 def create_service(service: CreateServiceRequest, db: Session = Depends(get_db), current_user: User = Depends(require_master)):
     return resources_service.create_service(db, current_user, service)

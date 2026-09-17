@@ -15,4 +15,4 @@ def change_user_role(db: Session, user: User, new_role: UserRole) -> User | None
     db.commit()
     db.refresh(user)
 
-    return User
+    return user

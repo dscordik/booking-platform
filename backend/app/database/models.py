@@ -32,4 +32,4 @@ class Service(Base):
     price: Mapped[int]
     #is_active показывает, доступен ли сервис для бронирования в данный момент
     is_active: Mapped[bool] = mapped_column(default=True)
-    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now)
+    created_at: Mapped[datetime] = mapped_column(default=lambda: datetime.now())
