@@ -10,9 +10,9 @@ from app.auth.dependencies import get_current_user
 
 router = APIRouter()
 
-@router.post('/registration', response_model=RegistrationResponse)
+@router.post('/register', response_model=RegistrationResponse)
 def create_user(user: RegistrationRequest, db: Session = Depends(get_db)):
-    return auth_service.create_user(db, user.login, user.email, user.password, user.first_name, user.last_name)
+    return auth_service.create_user(db, user.login, user.email, user.password, user.first_name, user.last_name, user.role)
 
 @router.post('/login', response_model=TokenResponse)
 def login(user: LoginRequest, db: Session = Depends(get_db)):

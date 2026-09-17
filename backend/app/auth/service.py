@@ -1,30 +1,32 @@
 from app.auth.schemas import RegistrationRequest, LoginRequest, TokenResponse
 from app.auth import repository as auth_repository
+from app.user import repository as user_repository
 from app.database.models import User
 from app.auth import security as auth_security
 from app.auth.config import security as security_config
+from app.enums.roles_enum import UserRole
 
 from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
-def create_user(db: Session, login, email, password, first_name, last_name) -> User:
-    if auth_repository.get_user_by_name(db, login):
+def create_user(db: Session, login: str, email: str, password: str, first_name: str, last_name: str, role: UserRole) -> User:
+    if user_repository.get_user_by_name(db, login):
         raise HTTPException(
             status_code=400,
             detail=f'User with login {login} already exists'
         ) 
 
     hash_password = auth_security.hash_the_password(password)
-    new_user = auth_repository.create_user(db, login, email, hash_password, first_name, last_name)
+    new_user = auth_repository.create_user(db, login, email, hash_password, first_name, last_name, role)
 
     db.commit()
     db.refresh(new_user)
 
     return new_user
 
-def login(db: Session, login, password) -> TokenResponse:
-    current_user = auth_repository.get_user_by_name(db, login)
+def login(db: Session, login: str, password: str) -> TokenResponse:
+    current_user = user_repository.get_user_by_name(db, login)
     if not current_user:
         raise HTTPException(
             status_code=401, 
