@@ -1,4 +1,4 @@
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, field_validator, Field
 from datetime import datetime
 
 from app.enums.roles_enum import UserRole
@@ -9,7 +9,8 @@ class RegistrationRequest(BaseModel):
     password: str
     first_name: str
     last_name: str
-    role: UserRole
+    role: UserRole = Field(UserRole.CLIENT)
+    phone: str | None = Field(None, max_length=15)
 
     @field_validator('role')
     @classmethod
@@ -37,4 +38,5 @@ class RegistrationResponse(BaseModel):
     first_name: str
     last_name: str
     role: UserRole
+    phone: str
     created_at: datetime

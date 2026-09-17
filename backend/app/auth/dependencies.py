@@ -18,4 +18,9 @@ def get_current_user(db: Session = Depends(get_db), payload: TokenPayload = Depe
             status_code=404,
             detail='User not found'
         )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=403,
+            detail='User is not active'
+        )
     return user

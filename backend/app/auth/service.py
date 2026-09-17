@@ -10,7 +10,7 @@ from fastapi import HTTPException
 
 from sqlalchemy.orm import Session
 
-def create_user(db: Session, login: str, email: str, password: str, first_name: str, last_name: str, role: UserRole) -> User:
+def create_user(db: Session, login: str, email: str, password: str, first_name: str, last_name: str, role: UserRole, phone: str) -> User:
     if user_repository.get_user_by_name(db, login):
         raise HTTPException(
             status_code=400,
@@ -18,7 +18,7 @@ def create_user(db: Session, login: str, email: str, password: str, first_name: 
         ) 
 
     hash_password = auth_security.hash_the_password(password)
-    new_user = auth_repository.create_user(db, login, email, hash_password, first_name, last_name, role)
+    new_user = auth_repository.create_user(db, login, email, hash_password, first_name, last_name, role, phone)
 
     db.commit()
     db.refresh(new_user)

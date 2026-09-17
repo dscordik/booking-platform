@@ -12,4 +12,4 @@ def require_admin(current_user: User = Depends(get_current_user)) -> User:
             detail='Admin access required'
         )
 
-    return require_admin
+    return current_user
