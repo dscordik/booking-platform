@@ -1,0 +1,25 @@
+# Node.js
+node_modules/
+dist/
+.vite/
+
+# Переменные окружения (секреты!)
+.env
+.env.local
+.env.production
+
+# Python (если бэкенд рядом)
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
+*.sqlite
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
