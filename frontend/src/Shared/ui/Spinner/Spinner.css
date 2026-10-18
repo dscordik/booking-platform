@@ -1,0 +1,23 @@
+.spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    padding: var(--space-xl);
+    color: var(--color-text-muted);
+}
+
+.spinner__circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid var(--color-surface-alt);
+    border-top-color: var(--color-primary);
+    animation: spinner-rotate 0.8s linear infinite;
+}
+
+.spinner__text { font-size: 14px; }
+
+@keyframes spinner-rotate {
+    to { transform: rotate(360deg); }
+}

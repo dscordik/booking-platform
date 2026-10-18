@@ -1,11 +1,11 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import {getServices, type Service} from "../../../Entities/service";
-import {Spinner} from "../../../Shared/ui/Spinner";
-import {ServiceCard} from "../../../Shared/ui/ServiceCard";
+import "./ServicesPage.css";
+import {ServiceCard} from "../../../Shared/ui/ServiceCard/ServiceCard.tsx";
+import {Spinner} from "../../../Shared/ui/Spinner/Spinner.tsx";
 
-
-export const ServicesPage:React.FC = () => {
+export const ServicesPage: React.FC = () => {
     const [services, setServices] = useState<Service[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -17,7 +17,7 @@ export const ServicesPage:React.FC = () => {
                 const curServices = await getServices()
                 setServices(curServices)
             } catch (err) {
-                if(err instanceof Error) {
+                if (err instanceof Error) {
                     setError(err.message)
                 }
             } finally {
@@ -27,15 +27,16 @@ export const ServicesPage:React.FC = () => {
         loadServices()
     }, []);
 
-    return(
-        <div>
+    return (
+        <div className="services-page">
+            <h2 className="services-page__heading">Каталог услуг</h2>
             {isLoading && <Spinner text='Загрузка услуг...'/>}
-            {error && <div>{error}</div>}
+            {error && <div className="services-page__error">{error}</div>}
             {!isLoading && !error && (
                 services.length === 0 ? (
-                    <div>В данный момент не доступных услуг</div>
+                    <div className="services-page__empty">В данный момент нет доступных услуг</div>
                 ) : (
-                    <div>
+                    <div className="services-grid">
                         {services.map((service) => (
                             <ServiceCard key={service.id} service={service}/>
                         ))}

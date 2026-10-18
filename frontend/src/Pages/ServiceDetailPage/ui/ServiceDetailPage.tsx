@@ -1,10 +1,11 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
 import {getService, type Service} from "../../../Entities/service";
-import {Spinner} from "../../../Shared/ui/Spinner.tsx";
 import {Link, useParams} from "react-router-dom";
+import "./ServiceDetailPage.css";
+import {Spinner} from "../../../Shared/ui/Spinner/Spinner.tsx";
 
-export const ServiceDetailPage:React.FC = () => {
+export const ServiceDetailPage: React.FC = () => {
     const [service, setService] = useState<Service | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -18,7 +19,7 @@ export const ServiceDetailPage:React.FC = () => {
                 setNotFound(false)
                 const curService = await getService(Number(id))
                 setService(curService)
-            } catch (err:any) {
+            } catch (err: any) {
                 if (err?.response?.status === 404) {
                     setNotFound(true)
                 } else if (err instanceof Error) {
@@ -31,25 +32,27 @@ export const ServiceDetailPage:React.FC = () => {
         loadService()
     }, [id]);
 
-    return(
-        <div>
+    return (
+        <div className="service-detail-page">
+            <Link className="service-detail-page__back" to={'/services'}>← Назад в каталог</Link>
             {isLoading && <Spinner text='Загрузка...'/>}
-            {notFound && <div>
-                <p>Услуга не найдена</p>
-                <Link to={'/services'}>Назад в каталог</Link>
-            </div>}
-            {error && <div>{error}</div>}
-            {!isLoading && !notFound && !error && (
-                <div>
-                    {service && (
-                        <div>
-                            <p>{service.title}</p>
-                            <p>{service.price}</p>
-                            <p>{service.description}</p>
-                            <p>{service.duration_min}</p>
-                        </div>
+            {notFound && (
+                <div className="not-found">
+                    <p>Услуга не найдена</p>
+                </div>
+            )}
+            {error && <div className="services-page__error">{error}</div>}
+            {!isLoading && !notFound && !error && service && (
+                <div className="service-detail">
+                    <h2 className="service-detail__title">{service.title}</h2>
+                    <div className="service-detail__meta">
+                        <span className="service-detail__price">{service.price} ₽</span>
+                        <span className="service-detail__duration">{service.duration_min} мин</span>
+                    </div>
+                    {service.description !== null && (
+                        <p className="service-detail__description">{service.description}</p>
                     )}
-                    <section>Свободные места появятся здесь</section>
+                    <section className="service-detail__slots">Свободные места появятся здесь</section>
                 </div>
             )}
         </div>

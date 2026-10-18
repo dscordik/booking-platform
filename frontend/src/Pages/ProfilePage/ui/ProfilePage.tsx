@@ -1,7 +1,7 @@
 import {useAuth} from "../../../Entities/session";
 import {useNavigate} from "react-router-dom";
 import {LOGIN_PATH} from "../../../Shared/config/routes.ts";
-
+import "./ProfilePage.css";
 
 export const ProfilePage = () => {
     const {user, logout} = useAuth()
@@ -12,11 +12,11 @@ export const ProfilePage = () => {
         navigate(LOGIN_PATH)
     }
 
-    return(
-        <div>
+    return (
+        <div className="profile-page">
             <h2>Профиль</h2>
-            <p>Привет {user?.first_name || user?.email}</p>
-            <button onClick={() => handleLogout()}>Выйти</button>
+            <p className="profile-page__greeting">Привет, {user?.first_name || user?.email}</p>
+            <button className="profile-page__logout" onClick={() => handleLogout()}>Выйти</button>
         </div>
     )
 }

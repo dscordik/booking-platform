@@ -1,12 +1,15 @@
 import * as React from "react";
-import {Header} from "../ui/Header.tsx";
+import {Header} from "../ui/Header/Header.tsx";
 import {Outlet} from "react-router-dom";
+import "./Layout.css";
 
-export const Layout:React.FC = () => {
-    return(
-        <div>
+export const Layout: React.FC = () => {
+    return (
+        <div className="app-shell">
             <Header/>
-            <Outlet/>
+            <main className="app-shell__content">
+                <Outlet/>
+            </main>
         </div>
     )
 }

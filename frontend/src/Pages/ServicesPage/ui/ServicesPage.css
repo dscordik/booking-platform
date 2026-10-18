@@ -1,0 +1,27 @@
+.services-page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+}
+
+.services-page__empty {
+    text-align: center;
+    padding: var(--space-xl);
+    color: var(--color-text-muted);
+    background: var(--color-surface);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+}
+
+.services-page__error {
+    color: var(--color-danger);
+    background: var(--color-danger-bg);
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+}
+
+.services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--space-lg);
+}
