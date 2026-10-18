@@ -4,8 +4,9 @@ from app import models
 from app.database import engine
 from app.deps import get_current_user
 from app.models import User
-from app.routers.auth import router as auth_router
 from app.schemas import UserOut
+from app.routers.auth import router as auth_router
+from app.routers.services import router as services_router
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title='booking-platform', description='Проект для портфолио', version='0.0.1')
@@ -17,7 +18,11 @@ app.add_middleware(
     allow_headers=['*']
 )
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
+app.include_router(services_router, prefix='/api/services', tags=['services'])
 
 @app.get('/api/me', response_model=UserOut)
 def current_user(user:User=Depends(get_current_user)):
     return user
+@app.get('/')
+def read_my_root():
+    return {'Hello':'That`s black screen'}
