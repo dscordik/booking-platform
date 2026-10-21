@@ -1,8 +1,9 @@
-from typing import Literal, Optional
-from pydantic import BaseModel, ConfigDict
+from typing import Literal, Optional, Any
+from pydantic import BaseModel, ConfigDict, computed_field, Field
 from datetime import datetime
 
 UserRole = Literal['user', 'admin']
+BookingStatus = Literal['pending', 'confirmed', 'cancelled', 'done']
 
 class UserCreate(BaseModel):
     email:str
@@ -46,5 +47,38 @@ class ServiceOut(BaseModel):
     price:int
     is_active:bool
     created_at:datetime
+
+    model_config = ConfigDict(from_attributes=True)
+
+class SlotCreate(BaseModel):
+    service_id:int
+    start_at:datetime
+    end_at:datetime
+
+class SlotOut(BaseModel):
+    id:int
+    service_id: int
+    start_at: datetime
+    end_at: datetime
+    is_booked:bool
+    service: Any = Field(default=None, exclude=True)
+    @computed_field
+    @property
+    def service_title(self)->str:
+        return self.service.title if self.service else "Услуга не найдена"
+
+    model_config = ConfigDict(from_attributes=True)
+
+class BookingCreate(BaseModel):
+    slot_id:int
+    comment:Optional[str] = None
+
+class BookingOut(BaseModel):
+    id:int
+    slot_id: int
+    status: str
+    comment: Optional[str] = None
+    created_at: datetime
+    slot:SlotOut
 
     model_config = ConfigDict(from_attributes=True)

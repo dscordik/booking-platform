@@ -3,7 +3,8 @@ import {useEffect, useState} from "react";
 import {getService, type Service} from "../../../Entities/service";
 import {Link, useParams} from "react-router-dom";
 import "./ServiceDetailPage.css";
-import {Spinner} from "../../../Shared/ui/Spinner/Spinner.tsx";
+import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
+import {SlotPicker} from "../../../Features/book-slot";
 
 export const ServiceDetailPage: React.FC = () => {
     const [service, setService] = useState<Service | null>(null)
@@ -52,7 +53,7 @@ export const ServiceDetailPage: React.FC = () => {
                     {service.description !== null && (
                         <p className="service-detail__description">{service.description}</p>
                     )}
-                    <section className="service-detail__slots">Свободные места появятся здесь</section>
+                    <SlotPicker serviceId={Number(id)}/>
                 </div>
             )}
         </div>

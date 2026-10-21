@@ -7,6 +7,8 @@ from app.models import User
 from app.schemas import UserOut
 from app.routers.auth import router as auth_router
 from app.routers.services import router as services_router
+from app.routers.slots import router as slots_router
+from app.routers.bookings import router as bookings_router
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title='booking-platform', description='Проект для портфолио', version='0.0.1')
@@ -19,6 +21,8 @@ app.add_middleware(
 )
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(services_router, prefix='/api/services', tags=['services'])
+app.include_router(slots_router, prefix='/api', tags=['slots'])
+app.include_router(bookings_router, prefix='/api', tags=['bookings'])
 
 @app.get('/api/me', response_model=UserOut)
 def current_user(user:User=Depends(get_current_user)):

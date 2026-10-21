@@ -5,3 +5,6 @@ export const HOME_PATH = '/'
 
 export const SERVICES_PATH = '/services'
 export const SERVICE_DETAIL_PATH = '/services/:id'
+
+// export const BOOKING_PATH = '/bookings/:id'
+export const MY_BOOKINGS_PATH = '/my-bookings'
