@@ -15,15 +15,15 @@ export const ServiceCard: React.FC<ServiceCardProps> = ({service}) => {
     }
 
     return (
-        <div className="service-card" onClick={handleClick}>
+        <div className="service-card" role="link" tabIndex={0} onClick={handleClick} onKeyDown={(e) => { if (e.key === 'Enter') handleClick() }}>
             <h3 className="service-card__title">{service.title}</h3>
-            <div className="service-card__meta">
-                <span className="service-card__duration">{service.duration_min} мин</span>
-                <span className="service-card__price">{service.price} ₽</span>
-            </div>
             {service.description !== null && (
                 <p className="service-card__description">{service.description}</p>
             )}
+            <div className="service-card__meta">
+                <span className="service-card__duration">{service.duration_min} мин</span>
+                <span className="service-card__price">{service.price} Р</span>
+            </div>
         </div>
     )
 }

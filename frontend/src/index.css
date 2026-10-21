@@ -1,79 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap');
+h1, h2, h3 { text-wrap: balance; }
 
-:root {
-  --color-bg: #fffaf0;
-  --color-surface: #ffffff;
-  --color-surface-alt: #fff4de;
-  --color-text: #3f2f17;
-  --color-text-muted: #8a7357;
-
-  --color-primary: #e8a33d;
-  --color-primary-hover: #d8921f;
-  --color-primary-soft: #fde9bf;
-
-  --color-border: #f0dfb8;
-
-  --color-danger: #c75146;
-  --color-danger-bg: #fdeceb;
-
-  --radius-sm: 8px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-
-  --shadow-sm: 0 1px 2px rgba(120, 90, 30, 0.08);
-  --shadow-md: 0 8px 24px rgba(120, 90, 30, 0.12);
-  --shadow-lift: 0 14px 32px rgba(216, 146, 31, 0.22);
-
-  --space-xs: 6px;
-  --space-sm: 12px;
-  --space-md: 20px;
-  --space-lg: 32px;
-  --space-xl: 48px;
-
-  --font-heading: 'Fraunces', Georgia, serif;
-  --font-body: 'Inter', system-ui, sans-serif;
-
-  font-family: var(--font-body);
-  color: var(--color-text);
-  background: var(--color-bg);
-  -webkit-font-smoothing: antialiased;
+:focus-visible {
+  outline: 2px solid var(--color-primary-hover);
+  outline-offset: 2px;
 }
 
-*, *::before, *::after {
-  box-sizing: border-box;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
-
-body {
-  margin: 0;
-  min-height: 100vh;
-  background:
-          radial-gradient(circle at 10% -10%, #fff1cf 0%, transparent 45%),
-          radial-gradient(circle at 90% 0%, #ffe3b0 0%, transparent 40%),
-          var(--color-bg);
-  background-attachment: fixed;
-}
-
-#root {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-h1, h2, h3 {
-  font-family: var(--font-heading);
-  color: var(--color-text);
-  margin: 0;
-  font-weight: 600;
-}
-
-h2 { font-size: 28px; letter-spacing: -0.3px; }
-h3 { font-size: 20px; }
-p { margin: 0; line-height: 1.5; }
-
-a { color: var(--color-primary-hover); text-decoration: none; }
-a:hover { text-decoration: underline; }
-
-button { font-family: inherit; cursor: pointer; border: none; }
-input { font-family: inherit; }
-
-::selection { background: var(--color-primary-soft); }

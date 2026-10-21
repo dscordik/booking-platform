@@ -1,73 +1,92 @@
 .service-detail-page {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    gap: var(--space-md);
 }
 
 .service-detail-page__back {
     align-self: flex-start;
+    padding: 6px 0;
     font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    transition: color 0.15s ease;
+}
+
+.service-detail-page__back:hover {
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.service-detail-page__not-found {
+    padding: var(--space-xl);
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    text-align: center;
     color: var(--color-text-muted);
 }
 
+.service-detail-page__error {
+    padding: var(--space-md);
+    border-radius: var(--radius-sm);
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+/* Карточка услуги */
 .service-detail {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    padding: var(--space-xl);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
-    padding: var(--space-xl);
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
 }
 
-.service-detail__title { font-size: 26px; }
+.service-detail__title {
+    font-size: 30px;
+    line-height: 1.2;
+    letter-spacing: -0.3px;
+}
 
 .service-detail__meta {
     display: flex;
     align-items: center;
-    gap: var(--space-md);
     flex-wrap: wrap;
+    gap: var(--space-sm);
 }
 
 .service-detail__price {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-primary-hover);
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--color-text);
 }
 
 .service-detail__duration {
-    font-size: 14px;
-    color: var(--color-text-muted);
-    background: var(--color-surface-alt);
     padding: 6px 14px;
     border-radius: 999px;
+    background: var(--color-surface-alt);
+    font-size: 14px;
+    color: var(--color-text-muted);
 }
 
 .service-detail__description {
-    color: var(--color-text-muted);
-    line-height: 1.6;
-}
-
-.service-detail__slots {
-    margin-top: var(--space-md);
-    padding: var(--space-lg);
-    border: 1px dashed var(--color-border);
-    border-radius: var(--radius-md);
-    text-align: center;
-    color: var(--color-text-muted);
-    background: var(--color-surface-alt);
-}
-
-.not-found {
-    text-align: center;
-    padding: var(--space-xl);
+    max-width: 65ch;
+    line-height: 1.7;
     color: var(--color-text-muted);
 }
 
-.services-page__error {
-    color: var(--color-danger);
-    background: var(--color-danger-bg);
-    padding: var(--space-md);
-    border-radius: var(--radius-sm);
+.service-detail__booking {
+    margin-top: var(--space-sm);
+    padding-top: var(--space-lg);
+    border-top: 1px dashed var(--color-border);
+}
+
+@media (max-width: 560px) {
+    .service-detail { padding: var(--space-lg) var(--space-md); }
+    .service-detail__title { font-size: 24px; }
 }

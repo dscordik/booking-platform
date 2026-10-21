@@ -1,5 +1,7 @@
 import {useCancelBooking} from "../model/use-cancel-booking";
 import * as React from "react";
+import {Button} from "../../../Shared/ui/Button/Button.tsx";
+
 
 interface CancelBookingButtonProps{
     id:number,
@@ -19,12 +21,7 @@ export const CancelBookingButton:React.FC<CancelBookingButtonProps> = ({id, onSu
             onSuccess()
         }
     }
-
     return(
-        <div>
-            <button disabled={isLoading} onClick={() => handleClick()}>
-                {isLoading ? 'Отменяем' : 'Отменить бронь'}
-            </button>
-        </div>
+        <Button variant="danger" size="sm" disabled={isLoading} onClick={() => handleClick()}>{isLoading ? 'Отменяем...' : 'Отменить бронь'}</Button>
     )
 }

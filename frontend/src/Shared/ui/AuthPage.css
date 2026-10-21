@@ -1,0 +1,39 @@
+.auth-page {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: var(--space-xl);
+}
+
+.auth-page__card {
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-lg);
+    width: 100%;
+    max-width: 400px;
+    padding: var(--space-xl) var(--space-lg) var(--space-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    text-align: center;
+}
+
+.auth-page__card::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-soft));
+}
+
+.auth-page__title { font-size: 30px; }
+
+.auth-page__footer {
+    font-size: 14px;
+    color: var(--color-text-muted);
+}
+
+.auth-page__link { font-weight: 600; }

@@ -1,6 +1,8 @@
 import {useEffect, useMemo, useState} from "react";
 import {type BookingOut, cancelBooking, getMyBookings} from "../../../Entities/booking";
 import {BookingCard} from "../../../Shared/ui/BookingCard/BookingCard"
+import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
+import "./MyBookingsPage.css";
 
 export const MyBookingsPage = () => {
     const [bookings, setBookings] = useState<BookingOut[]>([])
@@ -48,45 +50,43 @@ export const MyBookingsPage = () => {
     }
 
     return(
-        <div>
+        <div className="my-bookings">
+            <h2 className="my-bookings__title">Мои записи</h2>
             {isLoading ? (
-                <p>Загрузка..</p>
+                <Spinner text='Загрузка записей...'/>
             ):(
-                <div>
-                    {bookings.length === 0 ? (
-                        <p>У вас пока нет броней</p>
-                    ) : (
-                        <div>
-                            <div>
-                                <h2>Предстоящие записи</h2>
-                                {allBookings.coming.length === 0 ? (
-                                    <p>Предстоящих записей нет</p>
-                                ) : (
-                                    <div>
-                                        {allBookings.coming.map((booking) => (
-                                            <BookingCard key={booking.id} booking={booking} onCancel={() => handleCancel(booking.id)}/>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                            <div>
-                                <h2>История записей</h2>
-                                {allBookings.past.length === 0 ? (
-                                    <p>История записей пустая</p>
-                                ) : (
-                                    <div>
-                                        {allBookings.past.map((booking) => (
-                                            <BookingCard key={booking.id} booking={booking}/>
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    )}
-                </div>
-
+                bookings.length === 0 ? (
+                    <p className="my-bookings__empty">У вас пока нет броней</p>
+                ) : (
+                    <>
+                        <section className="my-bookings__section">
+                            <h3 className="my-bookings__section-title">Предстоящие записи</h3>
+                            {allBookings.coming.length === 0 ? (
+                                <p className="my-bookings__empty">Предстоящих записей нет</p>
+                            ) : (
+                                <div className="my-bookings__list">
+                                    {allBookings.coming.map((booking) => (
+                                        <BookingCard key={booking.id} booking={booking} onCancel={() => handleCancel(booking.id)}/>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                        <section className="my-bookings__section">
+                            <h3 className="my-bookings__section-title">История записей</h3>
+                            {allBookings.past.length === 0 ? (
+                                <p className="my-bookings__empty">История записей пустая</p>
+                            ) : (
+                                <div className="my-bookings__list">
+                                    {allBookings.past.map((booking) => (
+                                        <BookingCard key={booking.id} booking={booking}/>
+                                    ))}
+                                </div>
+                            )}
+                        </section>
+                    </>
+                )
             )}
-            {error && <p>{error}</p>}
+            {error && <p className="my-bookings__error" role="alert">{error}</p>}
         </div>
     )
 }

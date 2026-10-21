@@ -10,4 +10,10 @@
     max-width: 1080px;
     margin: 0 auto;
     padding: var(--space-lg) var(--space-md) var(--space-xl);
+    animation: app-shell-appear 0.3s ease both;
+}
+
+@keyframes app-shell-appear {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: none; }
 }

@@ -38,11 +38,9 @@ export const ServiceDetailPage: React.FC = () => {
             <Link className="service-detail-page__back" to={'/services'}>← Назад в каталог</Link>
             {isLoading && <Spinner text='Загрузка...'/>}
             {notFound && (
-                <div className="not-found">
-                    <p>Услуга не найдена</p>
-                </div>
+                <div className="service-detail-page__not-found"><p>Услуга не найдена</p></div>
             )}
-            {error && <div className="services-page__error">{error}</div>}
+            {error && <div className="service-detail-page__error" role="alert">{error}</div>}
             {!isLoading && !notFound && !error && service && (
                 <div className="service-detail">
                     <h2 className="service-detail__title">{service.title}</h2>
@@ -53,7 +51,9 @@ export const ServiceDetailPage: React.FC = () => {
                     {service.description !== null && (
                         <p className="service-detail__description">{service.description}</p>
                     )}
-                    <SlotPicker serviceId={Number(id)}/>
+                    <div className="service-detail__booking">
+                        <SlotPicker serviceId={Number(id)}/>
+                    </div>
                 </div>
             )}
         </div>
