@@ -54,7 +54,7 @@ def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = Depend
     return current_booking
 
 @router.get('/bookings', response_model=list[BookingAdmin])
-def get_all_bookings(status_filter:BookingStatusUpdate | None = Query(default=None, alias='status'), service_id:int | None = None,admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
+def get_all_bookings(status_filter:BookingStatus | None = Query(default=None, alias='status'), service_id:int | None = None,admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
     res = db.query(Booking).join(Slot).options(joinedload(Booking.user), joinedload(Booking.slot))
     if status_filter is not None:
         res = res.filter(Booking.status == status_filter)

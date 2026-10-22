@@ -1,0 +1,91 @@
+.admin-menu { position: relative; }
+
+.admin-menu__trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    background: var(--color-primary-soft);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--color-text);
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.admin-menu__trigger:hover,
+.admin-menu--open .admin-menu__trigger,
+.admin-menu__trigger--active {
+    background: var(--color-primary);
+}
+
+.admin-menu--open .admin-menu__trigger { box-shadow: var(--shadow-sm); }
+
+.admin-menu__chevron {
+    width: 7px;
+    height: 7px;
+    margin-top: -3px;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform 0.15s ease;
+}
+
+.admin-menu--open .admin-menu__chevron {
+    margin-top: 3px;
+    transform: rotate(225deg);
+}
+
+.admin-menu__dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 240px;
+    max-width: calc(100vw - 2 * var(--space-md));
+    padding: 6px;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-md);
+    animation: admin-menu-appear 0.15s ease both;
+}
+
+@keyframes admin-menu-appear {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: none; }
+}
+
+.admin-menu__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    color: var(--color-text);
+    transition: background 0.15s ease;
+}
+
+.admin-menu__item:hover {
+    background: var(--color-primary-soft);
+    text-decoration: none;
+}
+
+.admin-menu__item--active {
+    background: var(--color-surface-alt);
+    box-shadow: inset 3px 0 0 var(--color-primary);
+}
+
+.admin-menu__item-title {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.admin-menu__item-hint {
+    font-size: 13px;
+    color: var(--color-text-muted);
+}
