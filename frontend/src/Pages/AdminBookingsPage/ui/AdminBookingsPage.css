@@ -1,0 +1,8 @@
+.admin-bookings-page__comment {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.admin-bookings-page__status-select { min-width: 150px; }

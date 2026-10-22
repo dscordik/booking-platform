@@ -19,9 +19,9 @@ import {ProtectedRoute} from "../routes/protected-route";
 import {Layout} from "../../Shared/layout/Layout";
 import {MyBookingsPage} from "../../Pages/MyBookingsPage";
 import {ProtectedAdminRoute} from "../routes/admin-route.tsx";
-import {AdminServicesPage} from "../../Pages/AdminServicesPage/ui/AdminServicesPage.tsx";
-import {AdminSlotsPage} from "../../Pages/AdminSlotsPage/ui/AdminSlotsPage.tsx";
-import {AdminBookingsPage} from "../../Pages/AdminBookingsPage/ui/AdminBookingsPage.tsx";
+import {AdminServicesPage} from "../../Pages/AdminServicesPage";
+import {AdminSlotsPage} from "../../Pages/AdminSlotsPage";
+import {AdminBookingsPage} from "../../Pages/AdminBookingsPage";
 
 export const router = createBrowserRouter([
     {

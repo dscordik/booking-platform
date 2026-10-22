@@ -17,3 +17,8 @@
     background: var(--color-surface);
     box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
+
+.input--sm {
+    padding: 8px 10px;
+    font-size: 14px;
+}

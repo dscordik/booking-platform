@@ -3,6 +3,12 @@ import {useEffect, useState} from "react";
 import {type BookingAdminOut, getAllBookings, updateBookingStatus} from "../../../Entities/booking";
 import {getServices, type Service} from "../../../Entities/service";
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
+import {Select} from "../../../Shared/ui/Select/Select";
+import {StatusBadge} from "../../../Shared/ui/StatusBadge/StatusBadge";
+import {formatDateTime} from "../../../Shared/lib/format-date";
+import "../../../Shared/ui/AdminPage/AdminPage.css";
+import "../../../Shared/ui/Table/Table.css";
+import "./AdminBookingsPage.css";
 
 const STATUS_OPTIONS = [
     { value: 'pending', label: 'Ожидает' },
@@ -16,7 +22,7 @@ export const AdminBookingsPage:React.FC = () => {
     const [services, setServices] = useState<Service[]>([])
     const [filterStatus, setFilterStatus] = useState('')
     const [filteredServiceId, setFilteredServiceId] = useState<number | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
     useEffect(() => {
@@ -46,7 +52,6 @@ export const AdminBookingsPage:React.FC = () => {
     }
 
     async function loadServices() {
-        setIsLoading(true)
         try {
             const currentServices = await getServices()
             setServices(currentServices)
@@ -54,8 +59,6 @@ export const AdminBookingsPage:React.FC = () => {
             if (error instanceof Error) {
                 setError(error.message)
             }
-        } finally {
-            setIsLoading(false)
         }
     }
 
@@ -71,65 +74,67 @@ export const AdminBookingsPage:React.FC = () => {
     }
 
     return (
-        <div>
-            {isLoading ? <Spinner text='Загрузка...'/> : (
-                <div>
-                    <div className="admin-page__header"><h1>Управление записями</h1></div>
-                    <div className="admin-page__filters">
-                        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
-                            <option value="">Все статусы</option>
-                            {STATUS_OPTIONS.map(opt => (
-                                <option key={opt.value} value={opt.value}>{opt.label}</option>
-                            ))}
-                        </select>
-                        <select value={filteredServiceId ?? ''} onChange={(e) => setFilteredServiceId(e.target.value ? Number(e.target.value) : null)}>
-                            <option value="">Все услуги</option>
-                            {services.map(service => (
-                                <option key={service.id} value={service.id}>{service.title}</option>
-                            ))}
-                        </select>
-                    </div>
-                    {error && <p>{error}</p>}
-                    {bookings.length === 0 ? (
-                        <div>Записей нет</div>
-                    ) : (
-                        <div className="admin-table-wrapper">
-                            <table className="admin-table">
-                                <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Пользователь</th>
-                                    <th>Услуга</th>
-                                    <th>Дата/время</th>
-                                    <th>Статус</th>
-                                    <th>Комментарий</th>
-                                    <th>Действия</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {bookings.map(booking => (
-                                    <tr key={booking.id}>
-                                        <td>{booking.id}</td>
-                                        <td>{booking.user_email}</td>
-                                        <td>{booking.slot.service_title}</td>
-                                        <td>{new Date(booking.slot.start_at).toLocaleString()}</td>
-                                        <td>
-                                            {STATUS_OPTIONS.find(opt => opt.value === booking.status)?.label ?? booking.status}
-                                        </td>
-                                        <td>{booking.comment || '—'}</td>
-                                        <td className="admin-table__actions">
-                                            <select value={booking.status} onChange={(e) => handleStatusChange(booking.id, e.target.value)}>
-                                                {STATUS_OPTIONS.map(opt => (
-                                                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                                                ))}
-                                            </select>
-                                        </td>
-                                    </tr>
-                                ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    )}
+        <div className="admin-page admin-bookings-page">
+            <div className="admin-page__header"><h2 className="admin-page__title">Управление записями</h2></div>
+            <div className="admin-page__filters">
+                <Select className="admin-page__filter" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                    <option value="">Все статусы</option>
+                    {STATUS_OPTIONS.map(opt => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                </Select>
+                <Select className="admin-page__filter" value={filteredServiceId ?? ''} onChange={(e) => setFilteredServiceId(e.target.value ? Number(e.target.value) : null)}>
+                    <option value="">Все услуги</option>
+                    {services.map(service => (
+                        <option key={service.id} value={service.id}>{service.title}</option>
+                    ))}
+                </Select>
+            </div>
+            {error && <p className="admin-page__error" role="alert">{error}</p>}
+            {isLoading ? <Spinner text='Загрузка...'/> : bookings.length === 0 ? (
+                <div className="admin-page__empty">Записей нет</div>
+            ) : (
+                <div className="admin-table">
+                    <table className="admin-table__table">
+                        <thead>
+                        <tr>
+                            <th className="admin-table__head-cell">ID</th>
+                            <th className="admin-table__head-cell">Пользователь</th>
+                            <th className="admin-table__head-cell">Услуга</th>
+                            <th className="admin-table__head-cell">Дата/время</th>
+                            <th className="admin-table__head-cell">Статус</th>
+                            <th className="admin-table__head-cell">Комментарий</th>
+                            <th className="admin-table__head-cell admin-table__head-cell--actions">Действия</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {bookings.map(booking => (
+                            <tr className="admin-table__row" key={booking.id}>
+                                <td className="admin-table__cell admin-table__cell--muted">#{booking.id}</td>
+                                <td className="admin-table__cell">{booking.user_email}</td>
+                                <td className="admin-table__cell admin-table__cell--strong">{booking.slot.service_title}</td>
+                                <td className="admin-table__cell admin-table__cell--nowrap">{formatDateTime(booking.slot.start_at)}</td>
+                                <td className="admin-table__cell">
+                                    <StatusBadge variant={booking.status}>
+                                        {STATUS_OPTIONS.find(opt => opt.value === booking.status)?.label ?? booking.status}
+                                    </StatusBadge>
+                                </td>
+                                <td className="admin-table__cell admin-table__cell--muted admin-bookings-page__comment" title={booking.comment ?? undefined}>
+                                    {booking.comment || '—'}
+                                </td>
+                                <td className="admin-table__cell admin-table__cell--actions">
+                                    <div className="admin-table__actions">
+                                        <Select compact className="admin-bookings-page__status-select" value={booking.status} onChange={(e) => handleStatusChange(booking.id, e.target.value)}>
+                                            {STATUS_OPTIONS.map(opt => (
+                                                <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                            ))}
+                                        </Select>
+                                    </div>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
                 </div>
             )}
         </div>

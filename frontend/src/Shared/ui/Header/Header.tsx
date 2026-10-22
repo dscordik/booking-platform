@@ -1,19 +1,30 @@
 import * as React from "react";
-import {Link, useNavigate} from "react-router-dom";
-import {removeToken} from "../../lib/token-storage";
-import {ADMIN_BOOKINGS_PATH, ADMIN_SERVICES_PATH, ADMIN_SLOTS_PATH, LOGIN_PATH, PROFILE_PATH, REGISTER_PATH, SERVICES_PATH} from "../../config/routes";
+import {Link, NavLink, useNavigate} from "react-router-dom";
+import {
+    ADMIN_BOOKINGS_PATH,
+    ADMIN_SERVICES_PATH,
+    ADMIN_SLOTS_PATH,
+    LOGIN_PATH,
+    PROFILE_PATH,
+    REGISTER_PATH,
+    SERVICES_PATH
+} from "../../config/routes";
 import "./Header.css";
-import { Button } from "../Button/Button";
+import {Button} from "../Button/Button";
 import {useAuth} from "../../../Entities/session";
 
+function getLinkClass({isActive}: {isActive: boolean}) {
+    return `site-nav__link${isActive ? ' site-nav__link--active' : ''}`
+}
+
 export const Header: React.FC = () => {
-    const {user} = useAuth()
+    const {user, logout} = useAuth()
     const isAuth = Boolean(user)
     const isAdmin = user?.role === 'admin'
     const navigate = useNavigate();
 
     function handleLogout() {
-        removeToken();
+        logout();
         navigate(LOGIN_PATH);
     }
 
@@ -24,18 +35,18 @@ export const Header: React.FC = () => {
                 <nav className="site-nav">
                     {!isAuth ? (
                         <div>
-                            <Link className="site-nav__link" to={LOGIN_PATH}>Войти</Link>
+                            <NavLink className={getLinkClass} to={LOGIN_PATH}>Войти</NavLink>
                             <Link className="button button--primary button--sm" to={REGISTER_PATH}>Регистрация</Link>
                         </div>
                     ) : (
                         <div>
-                            <Link className="site-nav__link" to={SERVICES_PATH}>Каталог</Link>
-                            <Link className="site-nav__link" to={PROFILE_PATH}>Профиль</Link>
+                            <NavLink className={getLinkClass} to={SERVICES_PATH}>Каталог</NavLink>
+                            <NavLink className={getLinkClass} to={PROFILE_PATH}>Профиль</NavLink>
                             {isAdmin && (
-                                <div>
-                                    <Link className="site-nav__link" to={ADMIN_SERVICES_PATH}>Услуги</Link>
-                                    <Link className="site-nav__link" to={ADMIN_SLOTS_PATH}>Слоты</Link>
-                                    <Link className="site-nav__link" to={ADMIN_BOOKINGS_PATH}>Записи</Link>
+                                <div className="site-nav__group">
+                                    <NavLink className={getLinkClass} to={ADMIN_SERVICES_PATH}>Услуги</NavLink>
+                                    <NavLink className={getLinkClass} to={ADMIN_SLOTS_PATH}>Слоты</NavLink>
+                                    <NavLink className={getLinkClass} to={ADMIN_BOOKINGS_PATH}>Записи</NavLink>
                                 </div>
                             )}
                             <Button className="site-nav__logout" variant="secondary" size="sm" onClick={handleLogout}>Выйти</Button>

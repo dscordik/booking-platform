@@ -1,0 +1,44 @@
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+}
+
+.status-badge::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    opacity: 0.7;
+}
+
+.status-badge--pending,
+.status-badge--active,
+.status-badge--free {
+    background: var(--color-primary-soft);
+    color: var(--color-text);
+}
+
+.status-badge--confirmed,
+.status-badge--busy {
+    background: var(--color-primary);
+    color: var(--color-text);
+}
+
+.status-badge--cancelled {
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+}
+
+.status-badge--done,
+.status-badge--inactive {
+    background: var(--color-surface-alt);
+    color: var(--color-text-muted);
+}

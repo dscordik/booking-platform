@@ -1,8 +1,11 @@
 import * as React from "react";
 import "./Input.css";
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement>
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    compact?: boolean
+}
 
-export const Input: React.FC<InputProps> = ({className = '', ...rest}) => {
-    return <input className={`input ${className}`.trim()} {...rest}/>
+export const Input: React.FC<InputProps> = ({compact = false, className = '', ...rest}) => {
+    const classes = ['input', compact ? 'input--sm' : '', className].filter(Boolean).join(' ')
+    return <input className={classes} {...rest}/>
 }

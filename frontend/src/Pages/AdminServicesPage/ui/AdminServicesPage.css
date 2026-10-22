@@ -1,0 +1,6 @@
+.admin-services-page__input-title { min-width: 200px; }
+
+.admin-services-page__input-number {
+    min-width: 90px;
+    max-width: 130px;
+}
