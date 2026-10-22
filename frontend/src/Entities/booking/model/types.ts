@@ -13,3 +13,7 @@ export interface BookingCreate{
     slot_id:number,
     comment?:string
 }
+
+export interface BookingAdminOut extends BookingOut{
+    user_email:string
+}

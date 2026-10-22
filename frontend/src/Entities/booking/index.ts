@@ -1,2 +1,2 @@
-export type {BookingOut, BookingCreate} from "./model/types"
-export {getMyBookings, cancelBooking, createBooking} from "./api/booking-api"
+export type {BookingOut, BookingCreate, BookingAdminOut} from "./model/types"
+export {getMyBookings, cancelBooking, createBooking, getAllBookings, updateBookingStatus} from "./api/booking-api"

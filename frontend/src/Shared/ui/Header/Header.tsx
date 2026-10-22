@@ -1,12 +1,15 @@
 import * as React from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { getToken, removeToken } from "../../lib/token-storage";
-import {LOGIN_PATH, PROFILE_PATH, REGISTER_PATH, SERVICES_PATH} from "../../config/routes";
+import {Link, useNavigate} from "react-router-dom";
+import {removeToken} from "../../lib/token-storage";
+import {ADMIN_BOOKINGS_PATH, ADMIN_SERVICES_PATH, ADMIN_SLOTS_PATH, LOGIN_PATH, PROFILE_PATH, REGISTER_PATH, SERVICES_PATH} from "../../config/routes";
 import "./Header.css";
 import { Button } from "../Button/Button";
+import {useAuth} from "../../../Entities/session";
 
 export const Header: React.FC = () => {
-    const isAuth = Boolean(getToken());
+    const {user} = useAuth()
+    const isAuth = Boolean(user)
+    const isAdmin = user?.role === 'admin'
     const navigate = useNavigate();
 
     function handleLogout() {
@@ -28,6 +31,13 @@ export const Header: React.FC = () => {
                         <div>
                             <Link className="site-nav__link" to={SERVICES_PATH}>Каталог</Link>
                             <Link className="site-nav__link" to={PROFILE_PATH}>Профиль</Link>
+                            {isAdmin && (
+                                <div>
+                                    <Link className="site-nav__link" to={ADMIN_SERVICES_PATH}>Услуги</Link>
+                                    <Link className="site-nav__link" to={ADMIN_SLOTS_PATH}>Слоты</Link>
+                                    <Link className="site-nav__link" to={ADMIN_BOOKINGS_PATH}>Записи</Link>
+                                </div>
+                            )}
                             <Button className="site-nav__logout" variant="secondary" size="sm" onClick={handleLogout}>Выйти</Button>
                         </div>
                     )}

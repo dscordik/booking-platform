@@ -1,10 +1,10 @@
 from datetime import datetime
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy.orm import Session, joinedload
 from starlette import status
-from app.deps import get_current_user, get_db
+from app.deps import get_current_user, get_db, get_current_admin
 from app.models import User, Booking, Slot
-from app.schemas import BookingOut, BookingCreate
+from app.schemas import BookingOut, BookingCreate, BookingAdmin, BookingStatus, BookingStatusUpdate
 
 router = APIRouter()
 
@@ -52,3 +52,25 @@ def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = Depend
     slot.is_booked = False
     db.commit()
     return current_booking
+
+@router.get('/bookings', response_model=list[BookingAdmin])
+def get_all_bookings(status_filter:BookingStatusUpdate | None = Query(default=None, alias='status'), service_id:int | None = None,admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
+    res = db.query(Booking).join(Slot).options(joinedload(Booking.user), joinedload(Booking.slot))
+    if status_filter is not None:
+        res = res.filter(Booking.status == status_filter)
+    if service_id is not None:
+        res = res.filter(Slot.service_id == service_id)
+    res = res.order_by(Booking.created_at.desc())
+    return res.all()
+
+@router.patch('/bookings/{id}/admin-status', response_model=BookingAdmin)
+def update_admin_status(id:int, body:BookingStatusUpdate, admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
+    booking = db.query(Booking).options(joinedload(Booking.user), joinedload(Booking.slot)).filter(Booking.id == id).first()
+    if booking is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Брони нет')
+    if body.status == 'cancelled' and booking.status != 'cancelled':
+        booking.slot.is_booked = False
+    booking.status = body.status
+    db.commit()
+    db.refresh(booking)
+    return booking

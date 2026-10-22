@@ -82,3 +82,14 @@ class BookingOut(BaseModel):
     slot:SlotOut
 
     model_config = ConfigDict(from_attributes=True)
+
+class BookingStatusUpdate(BaseModel):
+    status:BookingStatus
+
+class BookingAdmin(BookingOut):
+    user:Any = Field(default=None,exclude=True)
+
+    @computed_field
+    @property
+    def user_email(self) -> str:
+        return self.user.email if self.user else 'Пользователь не найден'

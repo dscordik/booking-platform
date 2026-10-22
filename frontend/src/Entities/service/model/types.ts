@@ -6,3 +6,10 @@ export interface Service{
     price:number,
     is_active:boolean
 }
+
+export interface ServiceCreate{
+    title:string,
+    description?:string,
+    duration_min:number,
+    price:number
+}
