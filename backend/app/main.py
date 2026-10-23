@@ -30,3 +30,6 @@ def current_user(user:User=Depends(get_current_user)):
 @app.get('/')
 def read_my_root():
     return {'Hello':'That`s black screen'}
+@app.api_route('/api/health', methods=['GET', 'HEAD'])
+def health():
+    return {'status': 'ok'}
