@@ -1,7 +1,9 @@
 import axios from "axios"
 import {getToken, removeToken} from "../lib/token-storage";
 
-export const api = axios.create({baseURL:'http://localhost:8000/api'})
+export const api = axios.create({
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000/api'
+})
 
 api.interceptors.request.use((config) => {
     const token = getToken()
@@ -12,7 +14,8 @@ api.interceptors.request.use((config) => {
 })
 
 api.interceptors.response.use((res) => res, (error) => {
-    if (error.response?.status === 401) {
+    const isLogin = error.config?.url?.includes('/auth/login')
+    if (error.response?.status === 401 && !isLogin) {
         removeToken()
         window.location.href = '/login'
     }
