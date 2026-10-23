@@ -14,10 +14,14 @@ models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title='booking-platform', description='Проект для портфолио', version='0.0.1')
 app.add_middleware(
     CORSMiddleware,
-    allow_origins = ['*'],
+    allow_origins=[
+        "https://booking-platform-navy-seven.vercel.app",
+        "http://localhost:5173",          
+        "http://localhost:3000",
+    ],
     allow_credentials=True,
-    allow_methods=['*'],
-    allow_headers=['*']
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(services_router, prefix='/api/services', tags=['services'])
