@@ -1,6 +1,7 @@
 import {useState} from "react";
 import {useAuth} from "../../../../Entities/session";
 import * as React from "react";
+import {getErrorMessage} from "../../../../Shared/lib/get-error-message.ts";
 
 export const useLogin = (onSuccess: () => void ) => {
     const [email,setEmail] = useState('')
@@ -16,10 +17,9 @@ export const useLogin = (onSuccess: () => void ) => {
         try {
             await login(email, password)
             onSuccess()
-        } catch (error:any) {
-            const message = error?.response?.data?.detail || 'Не удалось войти'
-            setError(message)
-        } finally {
+        } catch (error) {
+            setError(getErrorMessage(error, "Не удалось войти"))
+        }  finally {
             setIsLoading(false)
         }
     }

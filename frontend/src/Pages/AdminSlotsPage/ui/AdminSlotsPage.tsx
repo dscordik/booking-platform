@@ -11,6 +11,7 @@ import {formatDateTime} from "../../../Shared/lib/format-date";
 import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminSlotsPage.css";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
 
 export const AdminSlotsPage:React.FC = () => {
     const [services, setServices] = useState<Service[]>([])
@@ -34,9 +35,7 @@ export const AdminSlotsPage:React.FC = () => {
             const currentServices = await getServices()
             setServices(currentServices)
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 
@@ -49,10 +48,8 @@ export const AdminSlotsPage:React.FC = () => {
         try {
             const currentSlots = await getSlots(serviceId, date || undefined)
             setSlots(currentSlots)
-        }  catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+        } catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setIsLoading(false)
         }
@@ -74,9 +71,7 @@ export const AdminSlotsPage:React.FC = () => {
             await loadSlots(selectedServiceId, selectedDate)
             setFormData({})
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 
@@ -88,10 +83,8 @@ export const AdminSlotsPage:React.FC = () => {
         try {
             await deleteSlot(id)
             await loadSlots(selectedServiceId, selectedDate)
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message)
-            }
+        } catch (error) {
+            setError(getErrorMessage(error))
         }
     }
 

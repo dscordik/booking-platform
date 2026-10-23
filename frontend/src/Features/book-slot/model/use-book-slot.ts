@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import {getSlots, type SlotOut} from "../../../Entities/slot";
 import {createBooking} from "../../../Entities/booking";
-import {LOGIN_PATH} from "../../../Shared/config/routes";
-import {useNavigate} from "react-router-dom";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
+import axios from "axios";
 
 export const useBookSlot = (service_id:number, onBooked?:()=>void) => {
     const [selectedDate, setSelectedDate] = useState(new Date().toISOString().slice(0,10))
@@ -11,7 +11,6 @@ export const useBookSlot = (service_id:number, onBooked?:()=>void) => {
     const [selectedSlotId, setSelectedSlotId] = useState<number | null>(null)
     const [isBooking, setIsBooking] = useState(false)
     const [bookingError, setBookingError] = useState<string | null>(null)
-    const navigate = useNavigate()
 
     useEffect(() => {
         loadSlots(selectedDate)
@@ -22,10 +21,8 @@ export const useBookSlot = (service_id:number, onBooked?:()=>void) => {
         try {
             const allSlots = await getSlots(service_id, date)
             setSlots(allSlots)
-        }catch (e) {
-            if (e instanceof Error) {
-                setBookingError(e.message)
-            }
+        }catch (error) {
+            setBookingError(getErrorMessage(error))
         } finally {
             setIsLoadingSlots(false)
         }
@@ -41,16 +38,18 @@ export const useBookSlot = (service_id:number, onBooked?:()=>void) => {
             onBooked?.()
             setSelectedSlotId(null)
             setBookingError(null)
-        } catch (error:any) {
-            if (error?.response?.status === 409) {
-                setBookingError('Слот только что заняли, выберите другой')
-                await loadSlots(selectedDate)
-            } else if (error?.response?.status === 500) {
-                setBookingError('Не удалось забронировать')
-            }else if (error?.response?.status === 401) {
-                navigate(LOGIN_PATH)
+        } catch (error:unknown) {
+            if (axios.isAxiosError(error)){
+                if (error?.response?.status === 409) {
+                    setBookingError('Слот только что заняли, выберите другой')
+                    await loadSlots(selectedDate)
+                } else if (error?.response?.status === 500) {
+                    setBookingError(getErrorMessage(error, 'Не удалось забронировать'))
+                } else {
+                    setBookingError(getErrorMessage(error))
+                }
             } else {
-                setBookingError('не удалось забронировать')
+                setBookingError(getErrorMessage(error))
             }
         } finally {
             setIsBooking(false)

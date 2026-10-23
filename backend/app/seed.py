@@ -1,7 +1,7 @@
-from datetime import datetime, timedelta
-
+from datetime import datetime, timedelta, timezone
 from app.database import SessionLocal
-from app.models import Service, Slot
+from app.models import Service, Slot, User
+from app.security import hash_password
 
 services = [
     {
@@ -44,7 +44,7 @@ services = [
 
 
 def generate_slots(db: SessionLocal, service: Service):
-    now = datetime.utcnow().replace(minute=0, second=0, microsecond=0)
+    now = datetime.now(timezone.utc).replace(minute=0, second=0, microsecond=0)
     for day in range(7):
         day_start = (now + timedelta(days=day)).replace(hour=10, minute=0)
         slots_per_day = 480 // service.duration_min
@@ -59,12 +59,28 @@ def generate_slots(db: SessionLocal, service: Service):
                     is_booked=False,
                 )
             )
+def check_admin(db:SessionLocal):
+    admin = db.query(User).filter(User.email == 'admin@booking.local').first()
+    if not admin:
+        hashed_password = hash_password('admin123')
+        new_admin = User(
+            email='admin@booking.local',
+            hashed_password=hashed_password,
+            role='admin'
+        )
+        db.add(new_admin)
+        db.commit()
+        print(f'Админ создан: с почтой admin@booking.local и паролем admin123')
+    else:
+        print(f'Админ уже существует, пропускаем его создание')
 
 
 def seed_db():
     db = SessionLocal()
 
     try:
+        check_admin(db)
+
         db.query(Slot).delete()
         db.query(Service).delete()
         db.commit()

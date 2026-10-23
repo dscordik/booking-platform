@@ -3,6 +3,7 @@ import {type BookingOut, cancelBooking, getMyBookings} from "../../../Entities/b
 import {BookingCard} from "../../../Shared/ui/BookingCard/BookingCard"
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
 import "./MyBookingsPage.css";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
 
 export const MyBookingsPage = () => {
     const [bookings, setBookings] = useState<BookingOut[]>([])
@@ -26,9 +27,7 @@ export const MyBookingsPage = () => {
             const bookings = await getMyBookings()
             setBookings(bookings)
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         } finally {
             setIsLoading(false)
         }
@@ -42,10 +41,8 @@ export const MyBookingsPage = () => {
         try{
             await cancelBooking(id)
             await loadBookings()
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message)
-            }
+        } catch (error) {
+            setError(getErrorMessage(error))
         }
     }
 

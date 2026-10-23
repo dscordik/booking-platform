@@ -9,6 +9,7 @@ import {formatDateTime} from "../../../Shared/lib/format-date";
 import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminBookingsPage.css";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
 
 const STATUS_OPTIONS = [
     { value: 'pending', label: 'Ожидает' },
@@ -42,10 +43,8 @@ export const AdminBookingsPage:React.FC = () => {
             }
             const currentBookings = await getAllBookings(params)
             setBookings(currentBookings)
-        } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+        }catch (error) {
+            setError(getErrorMessage(error))
         } finally {
             setIsLoading(false)
         }
@@ -56,9 +55,7 @@ export const AdminBookingsPage:React.FC = () => {
             const currentServices = await getServices()
             setServices(currentServices)
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 
@@ -67,9 +64,7 @@ export const AdminBookingsPage:React.FC = () => {
             await updateBookingStatus(id, newStatus)
             await loadBookings()
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 

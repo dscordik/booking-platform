@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {useAuth} from "../../../../Entities/session";
 import * as React from "react";
-
+import {getErrorMessage} from "../../../../Shared/lib/get-error-message.ts";
 
 export const useRegister = (onSuccess:() => void) => {
     const [email,setEmail] = useState('')
@@ -18,10 +18,9 @@ export const useRegister = (onSuccess:() => void) => {
         try{
             await register(email, password, firstName)
             onSuccess()
-        } catch (error:any) {
-            const message = error?.response?.data.detail || 'Не удалось зарегистрироваться'
-            setError(message)
-        } finally {
+        } catch (error) {
+            setError(getErrorMessage(error, "Не удалось зарегистрироваться"))
+        }  finally {
             setIsLoading(false)
         }
     }

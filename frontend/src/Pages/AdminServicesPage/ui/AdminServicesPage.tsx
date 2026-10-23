@@ -15,6 +15,7 @@ import {StatusBadge} from "../../../Shared/ui/StatusBadge/StatusBadge";
 import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminServicesPage.css";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message";
 
 export const AdminServicesPage:React.FC = () => {
     const [services, setServices] = useState<Service[]>([])
@@ -34,9 +35,7 @@ export const AdminServicesPage:React.FC = () => {
             const currentServices = await getServices()
             setServices(currentServices)
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         } finally {
             setIsLoading(false)
         }
@@ -52,9 +51,7 @@ export const AdminServicesPage:React.FC = () => {
             setIsCreating(false)
             setFormData({})
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 
@@ -64,9 +61,7 @@ export const AdminServicesPage:React.FC = () => {
             await loadServices()
             setEditingId(null)
         } catch (error) {
-            if (error instanceof Error) {
-                setError(error.message)
-            }
+            setError(getErrorMessage(error))
         }
     }
 
@@ -78,10 +73,8 @@ export const AdminServicesPage:React.FC = () => {
         try {
             await deleteService(id)
             await loadServices()
-        } catch (e) {
-            if (e instanceof Error) {
-                setError(e.message)
-            }
+        } catch (error) {
+            setError(getErrorMessage(error))
         }
     }
 
