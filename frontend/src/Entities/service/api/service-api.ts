@@ -2,7 +2,7 @@ import type {Service, ServiceCreate} from "../model/types"
 import {api} from "../../../Shared/api/base"
 
 export const getServices = async():Promise<Service[]> => {
-    const res = await api.get('/services')
+    const res = await api.get('/services/')
     return res.data
 }
 
@@ -12,7 +12,7 @@ export const getService = async(id:number):Promise<Service> => {
 }
 
 export const createService = async(value:Partial<ServiceCreate>):Promise<Service> => {
-    const res = await api.post<Service>('/services', value)
+    const res = await api.post<Service>('/services/', value)
     return res.data
 }
 
