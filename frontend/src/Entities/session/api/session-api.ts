@@ -1,6 +1,11 @@
 import {api} from "../../../Shared/api/base";
 import type {User, Token} from "../model/types";
 
+interface TelegramLinkCode{
+    code:string,
+    deep_link:string
+}
+
 export const login = async(email:string, password:string):Promise<Token> => {
     const res = await api.post<Token>('/auth/login', {email, password})
     return res.data
@@ -13,5 +18,10 @@ export const register = async(email:string, password:string, firstName?:string):
 
 export const getMe = async():Promise<User> => {
     const res = await api.get<User>('/me')
+    return res.data
+}
+
+export const getTelegramLinkCode = async():Promise<TelegramLinkCode> => {
+    const res = await api.post<TelegramLinkCode>('/me/telegram-link-code')
     return res.data
 }

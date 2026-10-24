@@ -5,7 +5,8 @@ export interface User{
     email:string,
     first_name?:string,
     role:UserRole,
-    created_at:string
+    created_at:string,
+    telegram_id:number | null
 }
 
 export interface Token{

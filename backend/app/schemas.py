@@ -16,8 +16,13 @@ class UserOut(BaseModel):
     first_name:str | None = None
     role:str
     created_at:datetime
+    telegram_id:int | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+class TelegramLinkCodeOut(BaseModel):
+    code:str
+    deep_link:str
 
 class LoginRequest(BaseModel):
     email:str

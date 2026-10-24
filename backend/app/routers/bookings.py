@@ -1,19 +1,21 @@
-from datetime import datetime
+import logging
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session, joinedload
 from starlette import status
 from app.deps import get_current_user, get_db, get_current_admin
 from app.models import User, Booking, Slot
 from app.schemas import BookingOut, BookingCreate, BookingAdmin, BookingStatus, BookingStatusUpdate
+from app.telegram_bot import send_telegram_message
 
 router = APIRouter()
 
 @router.post('/bookings', response_model=BookingOut)
-def create_booking(booking_data:BookingCreate,user:User = Depends(get_current_user), db:Session = Depends(get_db)):
-    slot = db.query(Slot).filter(Slot.id == booking_data.slot_id).with_for_update().first()
+async def create_booking(booking_data:BookingCreate,user:User = Depends(get_current_user), db:Session = Depends(get_db)):
+    slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == booking_data.slot_id).with_for_update().first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
-    if slot.start_at < datetime.utcnow():
+    if slot.start_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя забронировать слот в прошлом')
     if slot.is_booked:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Слот уже занят')
@@ -26,6 +28,15 @@ def create_booking(booking_data:BookingCreate,user:User = Depends(get_current_us
     )
     db.add(new_booking)
     db.commit()
+    try:
+        time_str = slot.start_at.strftime('%d.%m.%Y в %H.%M')
+        if user.telegram_id:
+            await send_telegram_message(user.telegram_id,f'Ваша запись создана {slot.service.title} на {time_str}')
+        admins = db.query(User).filter(User.role == 'admin', User.telegram_id.isnot(None)).all()
+        for admin in admins:
+            await send_telegram_message(admin.telegram_id, f'Новая запись: {slot.service.title}, клиент: {user.email}')
+    except Exception as e:
+        logging.warning(f'Ошибка отправке Telegram {e}')
     db.refresh(new_booking)
     return new_booking
 
@@ -35,7 +46,7 @@ def get_my_bookings(user:User = Depends(get_current_user), db:Session = Depends(
     return bookings
 
 @router.patch('/bookings/{id}/cancel', response_model=BookingOut)
-def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = Depends(get_db)):
+async def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = Depends(get_db)):
     current_booking = db.query(Booking).filter(Booking.id == id).first()
     if current_booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Брони не существует')
@@ -43,14 +54,23 @@ def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = Depend
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Нельзя отменить чужую бронь')
     if current_booking.status in ['cancelled', 'done']:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя отменить уже отменённую или завершённую бронь')
-    slot = db.query(Slot).filter(Slot.id == current_booking.slot_id).with_for_update().first()
+    slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == current_booking.slot_id).with_for_update().first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
-    if slot.start_at < datetime.utcnow():
+    if slot.start_at < datetime.now(timezone.utc):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя забронировать слот в прошлом')
     current_booking.status = "cancelled"
     slot.is_booked = False
     db.commit()
+    try:
+        time_str = slot.start_at.strftime('%d.%m.%Y в %H.%M')
+        if user.telegram_id:
+            await send_telegram_message(user.telegram_id,f'Ваша запись {slot.service.title} ({time_str}) отменена')
+        admins = db.query(User).filter(User.role == 'admin', User.telegram_id.isnot(None)).all()
+        for admin in admins:
+            await send_telegram_message(admin.telegram_id, f'Клиент отменил запись {slot.service.title} на {time_str}, клиент: {user.email}')
+    except Exception as e:
+        logging.warning(f'Ошибка при оптравке Telegram {e}')
     return current_booking
 
 @router.get('/bookings', response_model=list[BookingAdmin])
@@ -64,13 +84,20 @@ def get_all_bookings(status_filter:BookingStatus | None = Query(default=None, al
     return res.all()
 
 @router.patch('/bookings/{id}/admin-status', response_model=BookingAdmin)
-def update_admin_status(id:int, body:BookingStatusUpdate, admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
-    booking = db.query(Booking).options(joinedload(Booking.user), joinedload(Booking.slot)).filter(Booking.id == id).first()
+async def update_admin_status(id:int, body:BookingStatusUpdate, admin:User = Depends(get_current_admin) , db:Session = Depends(get_db)):
+    booking = db.query(Booking).options(joinedload(Booking.user), joinedload(Booking.slot).joinedload(Slot.service)).filter(Booking.id == id).first()
     if booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Брони нет')
     if body.status == 'cancelled' and booking.status != 'cancelled':
         booking.slot.is_booked = False
     booking.status = body.status
     db.commit()
+    try:
+        all_status = {'pending': 'ожидает', 'confirmed': 'подтверждена', 'done': 'выполнена', 'cancelled': 'отменена'}
+        stat = all_status.get(booking.status, booking.status)
+        if booking.user.telegram_id:
+            await send_telegram_message(booking.user.telegram_id,f'Статус вашей записи на {booking.slot.service.title} изменен на {stat}')
+    except Exception as e:
+        logging.warning(f'Ошибка при оптравке Telegram {e}')
     db.refresh(booking)
     return booking

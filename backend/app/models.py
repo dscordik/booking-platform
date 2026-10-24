@@ -11,6 +11,8 @@ class User(Base):
     first_name:Mapped[str | None] = mapped_column(String, nullable=True)
     role:Mapped[str] = mapped_column(String, default='user', nullable=False)
     created_at:Mapped[DateTime] = mapped_column(DateTime, server_default=func.now())
+    telegram_id:Mapped[int] = mapped_column(Integer, nullable=True, unique=True)
+    telegram_link_code:Mapped[str] = mapped_column(String, nullable=True, unique=True)
 
 class Service(Base):
     __tablename__ = 'services'
