@@ -4,6 +4,7 @@ import {getServices, type Service} from "../../../Entities/service";
 import "./ServicesPage.css";
 import {ServiceCard} from "../../../Shared/ui/ServiceCard/ServiceCard";
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
 
 export const ServicesPage: React.FC = () => {
     const [services, setServices] = useState<Service[]>([])
@@ -16,10 +17,8 @@ export const ServicesPage: React.FC = () => {
                 setIsLoading(true)
                 const curServices = await getServices()
                 setServices(curServices)
-            } catch (err) {
-                if (err instanceof Error) {
-                    setError(err.message)
-                }
+            }  catch (error) {
+                setError(getErrorMessage(error))
             } finally {
                 setIsLoading(false)
             }

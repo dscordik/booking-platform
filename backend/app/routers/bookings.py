@@ -15,7 +15,7 @@ async def create_booking(booking_data:BookingCreate,user:User = Depends(get_curr
     slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == booking_data.slot_id).with_for_update().first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
-    if slot.start_at < datetime.now(timezone.utc):
+    if slot.start_at < datetime.utcnow():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя забронировать слот в прошлом')
     if slot.is_booked:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Слот уже занят')
@@ -57,7 +57,7 @@ async def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = 
     slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == current_booking.slot_id).with_for_update().first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
-    if slot.start_at < datetime.now(timezone.utc):
+    if slot.start_at < datetime.utcnow():
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя забронировать слот в прошлом')
     current_booking.status = "cancelled"
     slot.is_booked = False
@@ -90,6 +90,10 @@ async def update_admin_status(id:int, body:BookingStatusUpdate, admin:User = Dep
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Брони нет')
     if body.status == 'cancelled' and booking.status != 'cancelled':
         booking.slot.is_booked = False
+    if booking.status == 'cancelled' and body.status != 'cancelled':
+        if booking.slot.is_booked:
+            raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Слот уже занят другим клиентом')
+        booking.slot.is_booked = True
     booking.status = body.status
     db.commit()
     try:

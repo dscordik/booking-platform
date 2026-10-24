@@ -5,6 +5,8 @@ import {Link, useParams} from "react-router-dom";
 import "./ServiceDetailPage.css";
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
 import {SlotPicker} from "../../../Features/book-slot";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
+import axios from "axios";
 
 export const ServiceDetailPage: React.FC = () => {
     const [service, setService] = useState<Service | null>(null)
@@ -18,13 +20,14 @@ export const ServiceDetailPage: React.FC = () => {
             try {
                 setIsLoading(true)
                 setNotFound(false)
+                setError(null)
                 const curService = await getService(Number(id))
                 setService(curService)
-            } catch (err: any) {
-                if (err?.response?.status === 404) {
+            } catch (error) {
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
                     setNotFound(true)
-                } else if (err instanceof Error) {
-                    setError(err.message)
+                } else {
+                    setError(getErrorMessage(error))
                 }
             } finally {
                 setIsLoading(false)

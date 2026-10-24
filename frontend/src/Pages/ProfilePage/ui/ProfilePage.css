@@ -44,3 +44,79 @@
     max-width: 260px;
     margin-top: var(--space-sm);
 }
+
+/* Блок Telegram */
+.profile-page__telegram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    margin-top: var(--space-sm);
+    padding-top: var(--space-md);
+    border-top: 1px dashed var(--color-border);
+}
+
+.profile-page__telegram-title { font-size: 18px; }
+
+.profile-page__telegram-text {
+    max-width: 320px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.profile-page__telegram-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: var(--color-primary-soft);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.profile-page__telegram-status::before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-primary-hover);
+}
+
+.profile-page__telegram-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-sm);
+    width: 100%;
+    max-width: 260px;
+}
+
+.profile-page__telegram-open { align-self: stretch; }
+
+.profile-page__telegram-connect {
+    width: 100%;
+    max-width: 260px;
+}
+
+.profile-page__telegram-hint {
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--color-text-muted);
+}
+
+.profile-page__telegram-error {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: var(--radius-sm);
+    background: var(--color-danger-bg);
+    color: var(--color-danger);
+    font-size: 14px;
+}
+
+@media (max-width: 560px) {
+    .profile-page { padding: var(--space-lg) var(--space-md); }
+}
