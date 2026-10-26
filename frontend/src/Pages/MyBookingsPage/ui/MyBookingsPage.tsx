@@ -1,58 +1,46 @@
-import {useEffect, useMemo, useState} from "react";
-import {type BookingOut, cancelBooking, getMyBookings} from "../../../Entities/booking";
+import {useMemo} from "react";
+import {cancelBooking, getMyBookings} from "../../../Entities/booking";
 import {BookingCard} from "../../../Shared/ui/BookingCard/BookingCard"
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
 import "./MyBookingsPage.css";
 import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {bookingsKeys} from "../../../Entities/booking/model/query-keys.ts";
+import {queryClient} from "../../../Shared/lib/query-client.ts";
 
 export const MyBookingsPage = () => {
-    const [bookings, setBookings] = useState<BookingOut[]>([])
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+    const {data, isPending, error} = useQuery({
+        queryKey:bookingsKeys.me,
+        queryFn:() => getMyBookings()
+    })
+
 
     const allBookings = useMemo(() => {
-        const coming = bookings.filter((item) => new Date(item.slot.start_at) > new Date() && item.status !== 'cancelled')
-        const past = bookings.filter((item) => !(new Date(item.slot.start_at) > new Date() && item.status !== 'cancelled'))
+        const list = data ?? []
+        const coming = list.filter((item) => new Date(item.slot.start_at) > new Date() && item.status !== 'cancelled')
+        const past = list.filter((item) => !(new Date(item.slot.start_at) > new Date() && item.status !== 'cancelled'))
         return{coming, past}
-    }, [bookings])
+    }, [data])
 
+    const cancel = useMutation({
+        mutationFn:(id:number) => cancelBooking(id),
+        onSuccess:() => queryClient.invalidateQueries({queryKey:bookingsKeys.me})
+    })
 
-    useEffect(() => {
-        loadBookings()
-    }, []);
-
-    async function loadBookings() {
-        setIsLoading(true)
-        try {
-            const bookings = await getMyBookings()
-            setBookings(bookings)
-        } catch (error) {
-            setError(getErrorMessage(error))
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    async function handleCancel(id:number) {
-        const confirmed = window.confirm('Вы действительно хотите отменить запись?')
-        if (!confirmed) {
-            return
-        }
-        try{
-            await cancelBooking(id)
-            await loadBookings()
-        } catch (error) {
-            setError(getErrorMessage(error))
+    function handleCancel(id:number) {
+        const confirmed = window.confirm('Вы действительно хотите отменить эту запись?')
+        if (confirmed) {
+            cancel.mutate(id)
         }
     }
 
     return(
         <div className="my-bookings">
             <h2 className="my-bookings__title">Мои записи</h2>
-            {isLoading ? (
+            {isPending ? (
                 <Spinner text='Загрузка записей...'/>
             ):(
-                bookings.length === 0 ? (
+                !data || data.length === 0 ? (
                     <p className="my-bookings__empty">У вас пока нет броней</p>
                 ) : (
                     <>
@@ -83,7 +71,7 @@ export const MyBookingsPage = () => {
                     </>
                 )
             )}
-            {error && <p className="my-bookings__error" role="alert">{error}</p>}
+            {error && <p className="my-bookings__error" role="alert">{getErrorMessage(error)}</p>}
         </div>
     )
 }

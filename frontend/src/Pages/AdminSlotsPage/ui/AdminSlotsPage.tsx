@@ -1,7 +1,9 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {getServices, type Service} from "../../../Entities/service";
-import {createSlot, deleteSlot, getSlots, type SlotOut} from "../../../Entities/slot";
+import {useState} from "react";
+import {
+    getServices,
+} from "../../../Entities/service";
+import {createSlot, deleteSlot, getSlots} from "../../../Entities/slot";
 import {Button} from "../../../Shared/ui/Button/Button";
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
 import {Input} from "../../../Shared/ui/Input/Input";
@@ -11,82 +13,63 @@ import {formatDateTime} from "../../../Shared/lib/format-date";
 import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminSlotsPage.css";
-import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {slotsKeys} from "../../../Entities/slot/model/query-keys.ts";
+import {servicesKeys} from "../../../Entities/service/model/query-keys.ts";
+import {queryClient} from "../../../Shared/lib/query-client.ts";
 
 export const AdminSlotsPage:React.FC = () => {
-    const [services, setServices] = useState<Service[]>([])
-    const [slots, setSlots] = useState<SlotOut[]>([])
     const [selectedServiceId, setSelectedServiceId] = useState<number | null>(null)
     const [selectedDate, setSelectedDate] = useState('')
-    const [isLoading, setIsLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
     const [formData, setFormData] = useState<{service_id?: number, start_at?: string, end_at?: string}>({})
 
-    useEffect(() => {
-        loadServices()
-    }, []);
+    const {data: servicesData, error: servicesError} = useQuery({
+        queryKey:servicesKeys.all,
+        queryFn:() => getServices()
+    })
 
-    useEffect(() => {
-        loadSlots(selectedServiceId,selectedDate)
-    }, [selectedServiceId, selectedDate]);
+    const { data: slotsData, isPending: slotsLoading, error: slotsError } = useQuery({
+        queryKey:slotsKeys.all(selectedServiceId!, selectedDate),
+        queryFn: () => getSlots(selectedServiceId!, selectedDate),
+        enabled:selectedServiceId !== null
+    })
 
-    async function loadServices() {
-        try {
-            const currentServices = await getServices()
-            setServices(currentServices)
-        } catch (error) {
-            setError(getErrorMessage(error))
+    const {mutate:createSlotMutate, error:createError} = useMutation({
+        mutationFn:(slotData:{service_id: number, start_at: string, end_at: string}) => createSlot(slotData),
+        onSuccess:() => {
+            queryClient.invalidateQueries({queryKey:slotsKeys.all(selectedServiceId!, selectedDate)})
+            setFormData({})
         }
-    }
+    })
 
-    async function loadSlots(serviceId:number | null, date?:string) {
-        if (!serviceId) {
-            setSlots([])
-            return
-        }
-        setIsLoading(true)
-        try {
-            const currentSlots = await getSlots(serviceId, date || undefined)
-            setSlots(currentSlots)
-        } catch (error) {
-            setError(getErrorMessage(error))
-        } finally {
-            setIsLoading(false)
-        }
-    }
+    const {mutate:deleteSlotMutate, error:deleteError} = useMutation({
+        mutationFn:(id:number) => deleteSlot(id),
+        onSuccess:() => queryClient.invalidateQueries({queryKey:slotsKeys.all(selectedServiceId!, selectedDate)})
+    })
 
-    async function handleCreate() {
+    function handleCreate() {
         if (!formData.start_at || !formData.end_at) {
             return
         }
         if (formData.end_at <= formData.start_at) {
             return
         }
-        try {
-            await createSlot({
-                service_id:selectedServiceId!,
-                start_at:formData.start_at,
-                end_at:formData.end_at
-            })
-            await loadSlots(selectedServiceId, selectedDate)
-            setFormData({})
-        } catch (error) {
-            setError(getErrorMessage(error))
+        createSlotMutate({
+            service_id:selectedServiceId!,
+            start_at:formData.start_at,
+            end_at:formData.end_at
+        })
+    }
+
+    function handleDelete(id:number) {
+        const confirmed = window.confirm('Вы действительно хотите удалить слот?')
+        if (confirmed) {
+            deleteSlotMutate(id)
         }
     }
 
-    async function handleDelete(id:number) {
-        const confirmed = window.confirm('Вы действительно хотите удалить слот?')
-        if (!confirmed) {
-            return
-        }
-        try {
-            await deleteSlot(id)
-            await loadSlots(selectedServiceId, selectedDate)
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }
-    }
+    const currentError = servicesError || slotsError || createError || deleteError
 
     return (
         <div className="admin-page admin-slots-page">
@@ -96,7 +79,7 @@ export const AdminSlotsPage:React.FC = () => {
             <div className="admin-page__filters">
                 <Select className="admin-page__filter" value={selectedServiceId ?? ''} onChange={(e) => setSelectedServiceId(e.target.value ? Number(e.target.value) : null)}>
                     <option value="">Выберите услугу</option>
-                    {services.map(service => (
+                    {servicesData?.map(service => (
                         <option key={service.id} value={String(service.id)}>{service.title}</option>
                     ))}
                 </Select>
@@ -117,12 +100,12 @@ export const AdminSlotsPage:React.FC = () => {
                     </div>
                 </form>
             )}
-            {error && <p className="admin-page__error" role="alert">{error}</p>}
+            {currentError && <p className="admin-page__error" role="alert">{getErrorMessage(currentError)}</p>}
             {!selectedServiceId ? (
                 <div className="admin-page__empty">Выберите услугу для просмотра слотов</div>
-            ) : isLoading ? (
+            ) : slotsLoading ? (
                 <Spinner text='Загрузка...'/>
-            ) : slots.length === 0 ? (
+            ) : !slotsData || slotsData?.length === 0 ? (
                 <div className="admin-page__empty">Слотов нет</div>
             ) : (
                 <div className="admin-table">
@@ -136,7 +119,7 @@ export const AdminSlotsPage:React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {slots.map(slot => (
+                        {slotsData?.map(slot => (
                             <tr className="admin-table__row" key={slot.id}>
                                 <td className="admin-table__cell admin-table__cell--strong admin-table__cell--nowrap">{formatDateTime(slot.start_at)}</td>
                                 <td className="admin-table__cell admin-table__cell--muted admin-table__cell--nowrap">{formatDateTime(slot.end_at)}</td>

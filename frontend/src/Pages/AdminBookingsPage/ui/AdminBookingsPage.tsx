@@ -1,7 +1,6 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
-import {type BookingAdminOut, getAllBookings, updateBookingStatus} from "../../../Entities/booking";
-import {getServices, type Service} from "../../../Entities/service";
+import {useState} from "react";
+import {getAllBookings, updateBookingStatus} from "../../../Entities/booking";
 import {Spinner} from "../../../Shared/ui/Spinner/Spinner";
 import {Select} from "../../../Shared/ui/Select/Select";
 import {StatusBadge} from "../../../Shared/ui/StatusBadge/StatusBadge";
@@ -10,6 +9,12 @@ import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminBookingsPage.css";
 import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {servicesKeys} from "../../../Entities/service/model/query-keys.ts";
+import {getServices} from "../../../Entities/service";
+import {bookingsKeys} from "../../../Entities/booking/model/query-keys.ts";
+import {queryClient} from "../../../Shared/lib/query-client.ts";
+import type {BookingStatus} from "../../../Entities/booking/model/types.ts";
 
 const STATUS_OPTIONS = [
     { value: 'pending', label: 'Ожидает' },
@@ -19,60 +24,40 @@ const STATUS_OPTIONS = [
 ]
 
 export const AdminBookingsPage:React.FC = () => {
-    const [bookings, setBookings] = useState<BookingAdminOut[]>([])
-    const [services, setServices] = useState<Service[]>([])
-    const [filterStatus, setFilterStatus] = useState('')
+    const [filterStatus, setFilterStatus] = useState<BookingStatus | ''>('')
     const [filteredServiceId, setFilteredServiceId] = useState<number | null>(null)
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        loadServices()
-    }, []);
+    const {data: servicesData, error: servicesError} = useQuery({
+        queryKey:servicesKeys.all,
+        queryFn:() => getServices()
+    })
 
-    useEffect(() => {
-        loadBookings()
-    }, [filterStatus, filteredServiceId]);
+    const { data: bookingsData, isPending: bookingsLoading, error: bookingsError } = useQuery({
+        queryKey: bookingsKeys.admin(filterStatus || undefined, filteredServiceId || undefined),
+        queryFn:() => getAllBookings({service_id:filteredServiceId || undefined, status:filterStatus || undefined})
+    })
 
-    async function loadBookings() {
-        setIsLoading(true)
-        try {
-            const params = {
-                status: filterStatus || undefined,
-                service_id: filteredServiceId || undefined
-            }
-            const currentBookings = await getAllBookings(params)
-            setBookings(currentBookings)
-        }catch (error) {
-            setError(getErrorMessage(error))
-        } finally {
-            setIsLoading(false)
+    const { mutate: changeStatusMutate, error: statusChangeError } = useMutation({
+        mutationFn:({id, status}:{id:number, status:BookingStatus}) => updateBookingStatus(id, status),
+        onSuccess:() => {
+            queryClient.invalidateQueries({queryKey:['bookings', 'admin']})
+        }
+    })
+
+    function handleStatusChange(id: number, newStatus: BookingStatus) {
+        const confirm = window.confirm('Вы действительно хотите изменить статус записи?')
+        if (confirm) {
+            changeStatusMutate({id,status:newStatus})
         }
     }
 
-    async function loadServices() {
-        try {
-            const currentServices = await getServices()
-            setServices(currentServices)
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }
-    }
-
-    async function handleStatusChange(id: number, newStatus: string) {
-        try {
-            await updateBookingStatus(id, newStatus)
-            await loadBookings()
-        } catch (error) {
-            setError(getErrorMessage(error))
-        }
-    }
+    const currentError = servicesError || statusChangeError || bookingsError
 
     return (
         <div className="admin-page admin-bookings-page">
             <div className="admin-page__header"><h2 className="admin-page__title">Управление записями</h2></div>
             <div className="admin-page__filters">
-                <Select className="admin-page__filter" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}>
+                <Select className="admin-page__filter" value={filterStatus} onChange={(e) => setFilterStatus(e.target.value as BookingStatus)}>
                     <option value="">Все статусы</option>
                     {STATUS_OPTIONS.map(opt => (
                         <option key={opt.value} value={opt.value}>{opt.label}</option>
@@ -80,13 +65,13 @@ export const AdminBookingsPage:React.FC = () => {
                 </Select>
                 <Select className="admin-page__filter" value={filteredServiceId ?? ''} onChange={(e) => setFilteredServiceId(e.target.value ? Number(e.target.value) : null)}>
                     <option value="">Все услуги</option>
-                    {services.map(service => (
+                    {servicesData?.map(service => (
                         <option key={service.id} value={service.id}>{service.title}</option>
                     ))}
                 </Select>
             </div>
-            {error && <p className="admin-page__error" role="alert">{error}</p>}
-            {isLoading ? <Spinner text='Загрузка...'/> : bookings.length === 0 ? (
+            {currentError && <p className="admin-page__error" role="alert">{getErrorMessage(currentError)}</p>}
+            {bookingsLoading ? <Spinner text='Загрузка...'/> : !bookingsData || bookingsData.length === 0 ? (
                 <div className="admin-page__empty">Записей нет</div>
             ) : (
                 <div className="admin-table">
@@ -103,7 +88,7 @@ export const AdminBookingsPage:React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {bookings.map(booking => (
+                        {bookingsData.map(booking => (
                             <tr className="admin-table__row" key={booking.id}>
                                 <td className="admin-table__cell admin-table__cell--muted">#{booking.id}</td>
                                 <td className="admin-table__cell">{booking.user_email}</td>
@@ -119,7 +104,7 @@ export const AdminBookingsPage:React.FC = () => {
                                 </td>
                                 <td className="admin-table__cell admin-table__cell--actions">
                                     <div className="admin-table__actions">
-                                        <Select compact className="admin-bookings-page__status-select" value={booking.status} onChange={(e) => handleStatusChange(booking.id, e.target.value)}>
+                                        <Select compact className="admin-bookings-page__status-select" value={booking.status} onChange={(e) => handleStatusChange(booking.id, e.target.value as BookingStatus)}>
                                             {STATUS_OPTIONS.map(opt => (
                                                 <option key={opt.value} value={opt.value}>{opt.label}</option>
                                             ))}

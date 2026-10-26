@@ -1,9 +1,11 @@
 import type {SlotOut} from "../../slot";
 
+export type BookingStatus = 'pending' | 'confirmed' | 'cancelled' | 'done'
+
 export interface BookingOut{
     id:number,
     slot_id:number,
-    status:'pending' | 'confirmed' | 'cancelled' | 'done',
+    status:BookingStatus,
     comment:string|null,
     created_at:string,
     slot:SlotOut

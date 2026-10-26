@@ -1,10 +1,9 @@
 import * as React from "react";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import {
     createService,
     deleteService,
     getServices,
-    type Service,
     type ServiceCreate,
     updateService
 } from "../../../Entities/service";
@@ -16,67 +15,64 @@ import "../../../Shared/ui/AdminPage/AdminPage.css";
 import "../../../Shared/ui/Table/Table.css";
 import "./AdminServicesPage.css";
 import {getErrorMessage} from "../../../Shared/lib/get-error-message";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {servicesKeys} from "../../../Entities/service/model/query-keys.ts";
+import {queryClient} from "../../../Shared/lib/query-client.ts";
 
 export const AdminServicesPage:React.FC = () => {
-    const [services, setServices] = useState<Service[]>([])
-    const [isLoading, setIsLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
     const [isCreating, setIsCreating] = useState(false)
     const [editingId, setEditingId] = useState<number | null>(null)
     const [formData, setFormData] = useState<Partial<ServiceCreate>>({})
 
-    useEffect(() => {
-        loadServices()
-    }, []);
+    const {data, isPending, error:queryError} = useQuery({
+        queryKey:servicesKeys.all,
+        queryFn:() => getServices()
+    })
 
-    async function loadServices() {
-        setIsLoading(true)
-        try {
-            const currentServices = await getServices()
-            setServices(currentServices)
-        } catch (error) {
-            setError(getErrorMessage(error))
-        } finally {
-            setIsLoading(false)
-        }
-    }
-
-    async function handleCreate() {
-        if (!formData.title || !formData.duration_min || !formData.price) {
-            return
-        }
-        try {
-            await createService(formData as ServiceCreate)
-            await loadServices()
+    const {mutate:createServiceMutate, error:createError} = useMutation({
+        mutationFn:(service:ServiceCreate) => createService(service),
+        onSuccess:() => {
+            queryClient.invalidateQueries({queryKey:servicesKeys.all})
             setIsCreating(false)
             setFormData({})
-        } catch (error) {
-            setError(getErrorMessage(error))
         }
-    }
+    })
 
-    async function handleUpdate(id:number) {
-        try {
-            await updateService(id, formData)
-            await loadServices()
+    const {mutate:updateServiceMutate, error:updateError} = useMutation({
+        mutationFn:({id, service}:{id:number, service:Partial<ServiceCreate>}) => updateService(id, service),
+        onSuccess:() => {
+            queryClient.invalidateQueries({queryKey:servicesKeys.all})
             setEditingId(null)
-        } catch (error) {
-            setError(getErrorMessage(error))
         }
-    }
+    })
 
-    async function handleDelete(id:number) {
-        const confirmed = window.confirm('Вы действительно хотите удалить услугу?')
-        if (!confirmed) {
+    const {mutate:deleteServiceMutate, error:deleteError} = useMutation({
+        mutationFn:(id:number) => deleteService(id),
+        onSuccess:() => queryClient.invalidateQueries({queryKey:servicesKeys.all})
+    })
+
+    function handleCreate() {
+        if (!formData.title || !formData.duration_min || !formData.price){
             return
         }
-        try {
-            await deleteService(id)
-            await loadServices()
-        } catch (error) {
-            setError(getErrorMessage(error))
+        createServiceMutate(formData as ServiceCreate)
+    }
+
+    function handleUpdate(id:number) {
+        const confirmed = window.confirm('Вы действительно хотите изменить эту  услугу?')
+        if (confirmed) {
+            updateServiceMutate({id, service:formData})
         }
     }
+
+    function handleDelete(id:number) {
+        const confirmed = window.confirm('Вы действительно хотите удалить эту  услугу?')
+        if (confirmed) {
+            deleteServiceMutate(id)
+        }
+    }
+
+    const currentError = queryError || createError || updateError || deleteError
 
     return(
         <div className="admin-page admin-services-page">
@@ -104,8 +100,8 @@ export const AdminServicesPage:React.FC = () => {
                     </div>
                 </form>
             )}
-            {error && <p className="admin-page__error" role="alert">{error}</p>}
-            {isLoading ? <Spinner text='Загрузка...'/> : services.length === 0 ? (
+            {currentError && <p className="admin-page__error" role="alert">{getErrorMessage(currentError)}</p>}
+            {isPending ? <Spinner text='Загрузка...'/> : !data || data.length === 0 ? (
                 <div className="admin-page__empty">Услуг пока нет</div>
             ) : (
                 <div className="admin-table">
@@ -120,7 +116,7 @@ export const AdminServicesPage:React.FC = () => {
                         </tr>
                         </thead>
                         <tbody>
-                        {services.map((service) => (
+                        {data.map((service) => (
                             <tr className="admin-table__row" key={service.id}>
                                 {editingId === service.id ? (
                                     <>
