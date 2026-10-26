@@ -4,6 +4,7 @@ import {useBookSlot} from "../model/use-book-slot.ts";
 import "./SlotPicker.css";
 import {Input} from "../../../Shared/ui/Input/Input";
 import {Button} from "../../../Shared/ui/Button/Button";
+import {getErrorMessage} from "../../../Shared/lib/get-error-message.ts";
 
 interface SlotPickerProps{
     serviceId:number,
@@ -65,7 +66,7 @@ export const SlotPicker:React.FC<SlotPickerProps> = ({serviceId, onBooked}) => {
                 {isBooking ? 'Бронируем...' : 'Записаться'}
             </Button>
             {success && <p className="slot-picker__message slot-picker__message--success" role="status">Запись создана</p>}
-            {bookingError && <p className="slot-picker__message slot-picker__message--error" role="alert">{bookingError}</p>}
+            {bookingError && <p className="slot-picker__message slot-picker__message--error" role="alert">{getErrorMessage(bookingError)}</p>}
         </div>
     )
 }

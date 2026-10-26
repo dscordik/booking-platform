@@ -51,5 +51,5 @@ export const useBookSlot = (service_id:number, onBooked?:()=>void) => {
 
     const currentError = queryError || bookingError
 
-    return {slots: slotsData ?? [], isLoadingSlots, bookSlot, selectSlot, currentError, isBooking, setSelectedDate}
+    return {slots: slotsData ?? [], isLoadingSlots, selectedDate, selectedSlotId, bookSlot, selectSlot, bookingError: currentError, isBooking, setSelectedDate}
 }
