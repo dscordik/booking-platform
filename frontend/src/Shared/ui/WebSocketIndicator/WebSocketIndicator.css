@@ -1,0 +1,39 @@
+.ws-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--color-surface-alt);
+    font-size: 13px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+}
+
+.ws-indicator__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-text-muted);
+}
+
+.ws-indicator--connected .ws-indicator__dot {
+    background: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.ws-indicator--connecting .ws-indicator__dot {
+    background: var(--color-primary-hover);
+    animation: ws-indicator-pulse 1s ease-in-out infinite;
+}
+
+.ws-indicator--disconnected .ws-indicator__dot { background: var(--color-danger); }
+
+@keyframes ws-indicator-pulse {
+    0%, 100% { opacity: 1; }
+    50%      { opacity: 0.3; }
+}
+
+@media (max-width: 760px) {
+    .ws-indicator__label { display: none; }
+}

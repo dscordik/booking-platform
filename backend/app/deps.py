@@ -32,3 +32,17 @@ def get_current_admin(user:User = Depends(get_current_user)):
     if user.role != 'admin':
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='У вас недостаточно прав')
     return user
+
+def get_ws_user(token:str | None, db:Session) -> User | None:
+    if not token:
+        return None
+    payload = decode_access_token(token)
+    if payload is None:
+        return None
+    email = payload.get('sub')
+    if email is None:
+        return None
+    user = db.query(User).filter(User.email == email).first()
+    if user is None:
+        return None
+    return user

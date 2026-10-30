@@ -5,12 +5,18 @@ import "./Header.css";
 import {Button} from "../Button/Button";
 import {AdminMenu} from "../AdminMenu/AdminMenu";
 import {useAuth} from "../../../Entities/session";
+import type {WebsocketStatus} from "../../lib/use-websocket.ts";
+import {WebSocketIndicator} from "../WebSocketIndicator/WebSocketIndicator.tsx";
 
 function getLinkClass({isActive}: {isActive: boolean}) {
     return `site-nav__link${isActive ? ' site-nav__link--active' : ''}`
 }
 
-export const Header: React.FC = () => {
+interface HeaderProps{
+    wsStatus:WebsocketStatus
+}
+
+export const Header:React.FC<HeaderProps> = ({wsStatus}) => {
     const {user, logout} = useAuth()
     const isAuth = Boolean(user)
     const isAdmin = user?.role === 'admin'
@@ -36,6 +42,7 @@ export const Header: React.FC = () => {
                             <NavLink className={getLinkClass} to={SERVICES_PATH}>Каталог</NavLink>
                             <NavLink className={getLinkClass} to={PROFILE_PATH}>Профиль</NavLink>
                             {isAdmin && <AdminMenu/>}
+                            <WebSocketIndicator status={wsStatus}/>
                             <Button className="site-nav__logout" variant="secondary" size="sm" onClick={handleLogout}>Выйти</Button>
                         </>
                     )}

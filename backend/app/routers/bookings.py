@@ -7,6 +7,7 @@ from app.deps import get_current_user, get_db, get_current_admin
 from app.models import User, Booking, Slot
 from app.schemas import BookingOut, BookingCreate, BookingAdmin, BookingStatus, BookingStatusUpdate
 from app.telegram_bot import send_telegram_message
+from app.websocket import Manager
 
 router = APIRouter()
 
@@ -28,6 +29,8 @@ async def create_booking(booking_data:BookingCreate,user:User = Depends(get_curr
     )
     db.add(new_booking)
     db.commit()
+    await Manager.broad_cast_admin({'type': 'booking_created', 'booking_id': new_booking.id, })
+    await Manager.broad_cast({'type': 'slot_occupancy_changed', 'service_id': slot.service.id, 'slot_id': slot.id, 'is_booked': True})
     try:
         time_str = slot.start_at.strftime('%d.%m.%Y в %H.%M')
         if user.telegram_id:
@@ -62,6 +65,8 @@ async def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = 
     current_booking.status = "cancelled"
     slot.is_booked = False
     db.commit()
+    await Manager.broad_cast_admin({'type': 'booking_cancelled', 'booking_id': current_booking.id})
+    await Manager.broad_cast({'type': 'slot_occupancy_changed', 'service_id': slot.service.id, 'slot_id': slot.id, 'is_booked': False})
     try:
         time_str = slot.start_at.strftime('%d.%m.%Y в %H.%M')
         if user.telegram_id:
@@ -88,14 +93,21 @@ async def update_admin_status(id:int, body:BookingStatusUpdate, admin:User = Dep
     booking = db.query(Booking).options(joinedload(Booking.user), joinedload(Booking.slot).joinedload(Slot.service)).filter(Booking.id == id).first()
     if booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Брони нет')
+    slot_changed = False
     if body.status == 'cancelled' and booking.status != 'cancelled':
         booking.slot.is_booked = False
+        slot_changed = True
     if booking.status == 'cancelled' and body.status != 'cancelled':
         if booking.slot.is_booked:
             raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Слот уже занят другим клиентом')
         booking.slot.is_booked = True
+        slot_changed = True
     booking.status = body.status
     db.commit()
+    if slot_changed:
+        await Manager.broad_cast({'type': 'slot_occupancy_changed', 'service_id': booking.slot.service_id,'slot_id': booking.slot_id, 'is_booked': booking.slot.is_booked})
+    await Manager.send_to_user(booking.user_id, {'type': 'booking_status_changed', 'booking_id': booking.id,'new_status': booking.status})
+    await Manager.broad_cast_admin({'type': 'booking_status_changed', 'booking_id': booking.id, 'new_status': booking.status})
     try:
         all_status = {'pending': 'ожидает', 'confirmed': 'подтверждена', 'done': 'выполнена', 'cancelled': 'отменена'}
         stat = all_status.get(booking.status, booking.status)
