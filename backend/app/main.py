@@ -12,7 +12,6 @@ from app.routers.bookings import router as bookings_router
 from app.routers.users import router as user_router
 from app.routers.ws import router as ws_router
 
-models.Base.metadata.create_all(bind=engine)
 app = FastAPI(title='booking-platform', description='Проект для портфолио', version='0.0.1')
 app.add_middleware(
     CORSMiddleware,
