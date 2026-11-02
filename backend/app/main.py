@@ -17,7 +17,8 @@ app = FastAPI(title='booking-platform', description='Проект для пор�
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://booking-platform-navy-seven.vercel.app",
+        "https://booking-platform-sigma-three.vercel.app",
+        "https://booking-platform-production.up.railway.app",
         "http://localhost:5173",
         "http://localhost:3000",
     ],
