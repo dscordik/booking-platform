@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
+from sqlalchemy import select
 from app.database import SessionLocal
-from app.models import Service, Slot, User
+from app.models import Service, Slot, User, Booking
 from app.security import hash_password
 
 services = [
@@ -59,6 +60,7 @@ def generate_slots(db: SessionLocal, service: Service):
                     is_booked=False,
                 )
             )
+
 def check_admin(db:SessionLocal):
     admin = db.query(User).filter(User.email == 'admin@booking.local').first()
     if not admin:
@@ -74,34 +76,58 @@ def check_admin(db:SessionLocal):
     else:
         print(f'Админ уже существует, пропускаем его создание')
 
+def utc_now():
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+def ensure_services(db):
+    if db.query(Service).count() > 0:
+        print("Услуги уже есть, пропускаем")
+        return
+    for item in services:
+        db.add(Service(**item))
+    db.commit()
+    print(f"Добавлено услуг: {len(services)}")
+
+def top_up_slots(db):
+    now = utc_now()
+    used = select(Booking.slot_id)
+    deleted = (
+        db.query(Slot)
+        .filter(Slot.start_at < now, Slot.id.not_in(used))
+        .delete(synchronize_session=False)
+    )
+    added = 0
+    for service in db.query(Service).all():
+        slots_per_day = 480 // service.duration_min
+        for day in range(7):
+            day_start = (now + timedelta(days=day)).replace(
+                hour=10, minute=0, second=0, microsecond=0
+            )
+            for i in range(slots_per_day):
+                start = day_start + timedelta(minutes=i * service.duration_min)
+                if start < now:
+                    continue
+                exists = db.query(Slot.id).filter(
+                    Slot.service_id == service.id, Slot.start_at == start
+                ).first()
+                if exists:
+                    continue
+                db.add(Slot(
+                    service_id=service.id,
+                    start_at=start,
+                    end_at=start + timedelta(minutes=service.duration_min),
+                    is_booked=False,
+                ))
+                added += 1
+    db.commit()
+    print(f"Удалено старых слотов: {deleted}, добавлено новых: {added}")
 
 def seed_db():
     db = SessionLocal()
-
     try:
         check_admin(db)
-
-        db.query(Slot).delete()
-        db.query(Service).delete()
-        db.commit()
-        print("Старые услуги и слоты удалены. Таблицы очищены.")
-
-        added_services = 0
-        for item in services:
-            service = Service(**item)
-            db.add(service)
-            added_services += 1
-        db.commit()
-        print(f"Добавлено {added_services} новых услуг в базу.")
-
-        all_services = db.query(Service).all()
-        total_slots = 0
-        for service in all_services:
-            generate_slots(db, service)
-            total_slots += 480 // service.duration_min * 7
-        db.commit()
-        print(f"Сгенерировано ~{total_slots} слотов на 7 дней вперёд.")
-
+        ensure_services(db)
+        top_up_slots(db)
     except Exception as e:
         print(f"Ошибка при сиде: {e}")
         db.rollback()
