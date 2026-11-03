@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.post('/bookings', response_model=BookingOut)
 async def create_booking(booking_data:BookingCreate,user:User = Depends(get_current_user), db:Session = Depends(get_db)):
-    slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == booking_data.slot_id).with_for_update().first()
+    slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == booking_data.slot_id).with_for_update(of=Slot).first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
     if slot.start_at < datetime.utcnow():
@@ -57,7 +57,7 @@ async def cancel_bookings(id:int,user = Depends(get_current_user), db:Session = 
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail='Нельзя отменить чужую бронь')
     if current_booking.status in ['cancelled', 'done']:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail='Нельзя отменить уже отменённую или завершённую бронь')
-    slot = db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == current_booking.slot_id).with_for_update().first()
+    slot =db.query(Slot).options(joinedload(Slot.service)).filter(Slot.id == current_booking.slot_id).with_for_update(of=Slot).first()
     if slot is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail='Слот не найден')
     if slot.start_at < datetime.utcnow():
