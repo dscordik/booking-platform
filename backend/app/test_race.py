@@ -16,7 +16,7 @@ async def main():
     # Его можно получить, зарегистрировавшись через Swagger (/api/auth/register)
     # или создав через этот же скрипт, если есть эндпоинт.
     # Пока просто скопируй его из ответа Swagger или из localStorage фронта.
-    token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUZVN0MTIzQGdtYWlsLmNvbSIsImV4cCI6MTc5MjQwNzE2M30.DCxHmSybmkrGOrsDYEi4v8kdFIbItpqcaJaxA77BV2I"
+    token = ""
 
     # 2. Вставь ID любого свободного слота (посмотри в Swagger GET /api/slots?service_id=1)
     # Возьми самый первый слот, у которого is_booked: false
