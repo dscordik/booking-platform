@@ -1,92 +1,19 @@
-.service-detail-page {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-}
-
-.service-detail-page__back {
-    align-self: flex-start;
-    padding: 6px 0;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--color-text-muted);
-    transition: color 0.15s ease;
-}
-
-.service-detail-page__back:hover {
-    color: var(--color-text);
-    text-decoration: none;
-}
-
-.service-detail-page__not-found {
-    padding: var(--space-xl);
-    border: 1px dashed var(--color-border);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    text-align: center;
-    color: var(--color-text-muted);
-}
-
-.service-detail-page__error {
-    padding: var(--space-md);
-    border-radius: var(--radius-sm);
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-}
-
-/* Карточка услуги */
-.service-detail {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
-    padding: var(--space-xl);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-}
-
-.service-detail__title {
-    font-size: 30px;
-    line-height: 1.2;
-    letter-spacing: -0.3px;
-}
-
-.service-detail__meta {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-}
-
-.service-detail__price {
-    font-family: var(--font-heading);
-    font-size: 24px;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.service-detail__duration {
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: var(--color-surface-alt);
-    font-size: 14px;
-    color: var(--color-text-muted);
-}
-
-.service-detail__description {
-    max-width: 65ch;
-    line-height: 1.7;
-    color: var(--color-text-muted);
-}
-
-.service-detail__booking {
-    margin-top: var(--space-sm);
-    padding-top: var(--space-lg);
-    border-top: 1px dashed var(--color-border);
-}
-
-@media (max-width: 560px) {
-    .service-detail { padding: var(--space-lg) var(--space-md); }
-    .service-detail__title { font-size: 24px; }
-}
+.service-detail-page{display:flex;flex-direction:column;gap:var(--space-md)}
+.service-detail-page__back{align-self:flex-start;padding:6px 0;font-size:14px;font-weight:500;color:var(--color-text-muted);transition:color .25s ease,transform .3s var(--ease)}
+.service-detail-page__back:hover{color:var(--color-text);text-decoration:none;transform:translateX(-4px)}
+.service-detail-page__not-found{padding:var(--space-xl);border:1px dashed var(--color-border);border-radius:var(--radius-lg);background:rgba(255,255,255,.85);text-align:center;color:var(--color-text-muted)}
+.service-detail-page__error{padding:var(--space-md);border-radius:var(--radius-sm);background:var(--color-danger-bg);color:var(--color-danger)}
+.service-detail{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:var(--space-md);padding:var(--space-xl);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);animation:detail-in .8s var(--ease) both}
+.service-detail::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--color-primary-hover),var(--color-primary),var(--color-primary-soft),var(--color-primary));background-size:200% 100%;animation:bar-flow 6s linear infinite}
+.service-detail::after{content:"";position:absolute;top:-120px;right:-120px;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(253,233,191,.9),transparent 70%);pointer-events:none;animation:glow-breathe 7s ease-in-out infinite}
+.service-detail > *{position:relative;z-index:1}
+.service-detail__title{font-size:clamp(28px,4vw,40px);line-height:1.15;letter-spacing:-.6px}
+.service-detail__meta{display:flex;align-items:center;flex-wrap:wrap;gap:var(--space-sm)}
+.service-detail__price{font-family:var(--font-heading);font-size:28px;font-weight:600;background:linear-gradient(135deg,var(--color-text),var(--color-primary-deep));-webkit-background-clip:text;background-clip:text;color:transparent}
+.service-detail__duration{padding:6px 14px;border-radius:999px;background:var(--color-surface-alt);border:1px solid var(--color-border);font-size:14px;color:var(--color-text-muted)}
+.service-detail__description{max-width:65ch;line-height:1.75;color:var(--color-text-muted)}
+.service-detail__booking{margin-top:var(--space-sm);padding-top:var(--space-lg);border-top:1px dashed var(--color-border);animation:detail-in .9s .25s var(--ease) both}
+@keyframes detail-in{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+@keyframes bar-flow{to{background-position:200% 0}}
+@keyframes glow-breathe{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.18);opacity:1}}
+@media (max-width:560px){.service-detail{padding:var(--space-lg) var(--space-md)}}

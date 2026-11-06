@@ -1,18 +1,7 @@
-.auth-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    text-align: left;
-}
-
-.auth-form__submit { margin-top: var(--space-xs); }
-
-.auth-form__error {
-    margin: 0;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-    font-size: 14px;
-    line-height: 1.4;
-}
+.auth-form{display:flex;flex-direction:column;gap:var(--space-sm);text-align:left}
+.auth-form > *{animation:field-in .6s var(--ease) both}
+.auth-form > :nth-child(1){animation-delay:.25s}.auth-form > :nth-child(2){animation-delay:.33s}.auth-form > :nth-child(3){animation-delay:.41s}.auth-form > :nth-child(n+4){animation-delay:.49s}
+.auth-form__submit{margin-top:var(--space-xs)}
+.auth-form__error{margin:0;padding:10px 14px;border-radius:var(--radius-sm);background:var(--color-danger-bg);color:var(--color-danger);font-size:14px;line-height:1.4;animation:err-shake .5s ease both}
+@keyframes field-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+@keyframes err-shake{0%{opacity:0;transform:translateX(0)}20%{opacity:1;transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}100%{transform:none;opacity:1}}

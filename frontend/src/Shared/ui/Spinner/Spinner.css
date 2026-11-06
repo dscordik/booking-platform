@@ -1,23 +1,6 @@
-.spinner {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-xl);
-    color: var(--color-text-muted);
-}
-
-.spinner__circle {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    border: 3px solid var(--color-surface-alt);
-    border-top-color: var(--color-primary);
-    animation: spinner-rotate 0.8s linear infinite;
-}
-
-.spinner__text { font-size: 14px; }
-
-@keyframes spinner-rotate {
-    to { transform: rotate(360deg); }
-}
+.spinner{display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);padding:var(--space-xl);color:var(--color-text-muted);animation:spinner-in .4s ease both}
+.spinner__circle{width:40px;height:40px;border-radius:50%;background:conic-gradient(from 0deg,transparent 0 12%,var(--color-primary) 100%);-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));mask:radial-gradient(farthest-side,transparent calc(100% - 4px),#000 calc(100% - 3px));animation:spinner-rotate .9s linear infinite}
+.spinner__text{font-size:14px;animation:spinner-text 1.6s ease-in-out infinite}
+@keyframes spinner-rotate{to{transform:rotate(360deg)}}
+@keyframes spinner-in{from{opacity:0}to{opacity:1}}
+@keyframes spinner-text{0%,100%{opacity:1}50%{opacity:.45}}

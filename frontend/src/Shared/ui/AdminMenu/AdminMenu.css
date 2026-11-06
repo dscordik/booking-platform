@@ -1,91 +1,16 @@
-.admin-menu { position: relative; }
-
-.admin-menu__trigger {
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 14px;
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    background: var(--color-primary-soft);
-    font-size: 15px;
-    font-weight: 600;
-    color: var(--color-text);
-    transition: background 0.15s ease, box-shadow 0.15s ease;
-}
-
-.admin-menu__trigger:hover,
-.admin-menu--open .admin-menu__trigger,
-.admin-menu__trigger--active {
-    background: var(--color-primary);
-}
-
-.admin-menu--open .admin-menu__trigger { box-shadow: var(--shadow-sm); }
-
-.admin-menu__chevron {
-    width: 7px;
-    height: 7px;
-    margin-top: -3px;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
-    transform: rotate(45deg);
-    transition: transform 0.15s ease;
-}
-
-.admin-menu--open .admin-menu__chevron {
-    margin-top: 3px;
-    transform: rotate(225deg);
-}
-
-.admin-menu__dropdown {
-    position: absolute;
-    top: calc(100% + 8px);
-    right: 0;
-    z-index: 20;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-width: 240px;
-    max-width: calc(100vw - 2 * var(--space-md));
-    padding: 6px;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-md);
-    box-shadow: var(--shadow-md);
-    animation: admin-menu-appear 0.15s ease both;
-}
-
-@keyframes admin-menu-appear {
-    from { opacity: 0; transform: translateY(-4px); }
-    to   { opacity: 1; transform: none; }
-}
-
-.admin-menu__item {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    padding: 10px 12px;
-    border-radius: var(--radius-sm);
-    color: var(--color-text);
-    transition: background 0.15s ease;
-}
-
-.admin-menu__item:hover {
-    background: var(--color-primary-soft);
-    text-decoration: none;
-}
-
-.admin-menu__item--active {
-    background: var(--color-surface-alt);
-    box-shadow: inset 3px 0 0 var(--color-primary);
-}
-
-.admin-menu__item-title {
-    font-size: 15px;
-    font-weight: 600;
-}
-
-.admin-menu__item-hint {
-    font-size: 13px;
-    color: var(--color-text-muted);
-}
+.admin-menu{position:relative}
+.admin-menu__trigger{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border:1px solid rgba(232,163,61,.35);border-radius:999px;background:var(--color-primary-soft);font-size:15px;font-weight:600;color:var(--color-text);transition:background .25s ease,box-shadow .3s var(--ease),transform .25s var(--ease)}
+.admin-menu__trigger:hover,.admin-menu--open .admin-menu__trigger,.admin-menu__trigger--active{background:var(--gradient-brand);border-color:var(--color-primary-hover)}
+.admin-menu__trigger:hover{transform:translateY(-1px);box-shadow:var(--shadow-sm)}
+.admin-menu--open .admin-menu__trigger{box-shadow:var(--shadow-lift)}
+.admin-menu__chevron{width:7px;height:7px;margin-top:-3px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .35s var(--ease),margin .35s var(--ease)}
+.admin-menu--open .admin-menu__chevron{margin-top:3px;transform:rotate(225deg)}
+.admin-menu__dropdown{position:absolute;top:calc(100% + 10px);right:0;z-index:20;display:flex;flex-direction:column;gap:2px;min-width:250px;max-width:calc(100vw - 2 * var(--space-md));padding:8px;background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border:1px solid var(--color-border);border-radius:var(--radius-md);box-shadow:var(--shadow-md);transform-origin:top right;animation:admin-menu-appear .35s var(--ease-spring) both}
+@keyframes admin-menu-appear{from{opacity:0;transform:translateY(-10px) scale(.92)}to{opacity:1;transform:none}}
+.admin-menu__item{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:var(--radius-sm);color:var(--color-text);animation:item-in .4s var(--ease) both;transition:background .2s ease,transform .3s var(--ease),padding .3s var(--ease)}
+.admin-menu__item:nth-child(1){animation-delay:.05s}.admin-menu__item:nth-child(2){animation-delay:.1s}.admin-menu__item:nth-child(3){animation-delay:.15s}.admin-menu__item:nth-child(n+4){animation-delay:.2s}
+.admin-menu__item:hover{background:var(--color-primary-soft);text-decoration:none;padding-left:16px}
+.admin-menu__item--active{background:var(--color-surface-alt);box-shadow:inset 3px 0 0 var(--color-primary)}
+.admin-menu__item-title{font-size:15px;font-weight:600}
+.admin-menu__item-hint{font-size:13px;color:var(--color-text-muted)}
+@keyframes item-in{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}

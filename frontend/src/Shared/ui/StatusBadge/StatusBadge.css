@@ -1,44 +1,9 @@
-.status-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.2px;
-    white-space: nowrap;
-}
-
-.status-badge::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: currentColor;
-    opacity: 0.7;
-}
-
-.status-badge--pending,
-.status-badge--active,
-.status-badge--free {
-    background: var(--color-primary-soft);
-    color: var(--color-text);
-}
-
-.status-badge--confirmed,
-.status-badge--busy {
-    background: var(--color-primary);
-    color: var(--color-text);
-}
-
-.status-badge--cancelled {
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-}
-
-.status-badge--done,
-.status-badge--inactive {
-    background: var(--color-surface-alt);
-    color: var(--color-text-muted);
-}
+.status-badge{display:inline-flex;align-items:center;gap:7px;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:600;letter-spacing:.2px;white-space:nowrap;animation:badge-pop .5s var(--ease-spring) both}
+.status-badge::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;opacity:.75}
+.status-badge--pending,.status-badge--active,.status-badge--free{background:var(--color-primary-soft);color:var(--color-text)}
+.status-badge--pending::before{animation:badge-dot 1.6s ease-in-out infinite}
+.status-badge--confirmed,.status-badge--busy{background:var(--gradient-brand);color:#2f2210;box-shadow:0 4px 12px rgba(216,146,31,.25)}
+.status-badge--cancelled{background:var(--color-danger-bg);color:var(--color-danger)}
+.status-badge--done,.status-badge--inactive{background:var(--color-surface-alt);color:var(--color-text-muted)}
+@keyframes badge-pop{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes badge-dot{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.6);opacity:.3}}

@@ -1,39 +1,10 @@
-.auth-page {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: var(--space-xl);
-}
-
-.auth-page__card {
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-lg);
-    width: 100%;
-    max-width: 400px;
-    padding: var(--space-xl) var(--space-lg) var(--space-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-md);
-    text-align: center;
-}
-
-.auth-page__card::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto 0;
-    height: 5px;
-    background: linear-gradient(90deg, var(--color-primary), var(--color-primary-soft));
-}
-
-.auth-page__title { font-size: 30px; }
-
-.auth-page__footer {
-    font-size: 14px;
-    color: var(--color-text-muted);
-}
-
-.auth-page__link { font-weight: 600; }
+.auth-page{display:flex;justify-content:center;align-items:flex-start;padding-top:var(--space-xl)}
+.auth-page__card{position:relative;overflow:hidden;display:flex;flex-direction:column;gap:var(--space-lg);width:100%;max-width:420px;padding:var(--space-xl) var(--space-lg) var(--space-lg);background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);text-align:center;animation:auth-in .9s var(--ease) both}
+.auth-page__card::before{content:"";position:absolute;inset:0 0 auto 0;height:5px;background:linear-gradient(90deg,var(--color-primary-hover),var(--color-primary),var(--color-primary-soft),var(--color-primary));background-size:200% 100%;animation:bar-flow 6s linear infinite}
+.auth-page__card::after{content:"";position:absolute;top:-90px;left:50%;width:300px;height:200px;margin-left:-150px;border-radius:50%;background:radial-gradient(circle,rgba(253,233,191,.9),transparent 70%);pointer-events:none;z-index:-1}
+.auth-page__title{font-size:32px;letter-spacing:-.5px}
+.auth-page__footer{font-size:14px;color:var(--color-text-muted)}
+.auth-page__link{font-weight:600;background:linear-gradient(currentColor,currentColor) 0 100%/0 2px no-repeat;transition:background-size .35s var(--ease)}
+.auth-page__link:hover{background-size:100% 2px;text-decoration:none}
+@keyframes auth-in{from{opacity:0;transform:translateY(34px) scale(.96)}to{opacity:1;transform:none}}
+@keyframes bar-flow{to{background-position:200% 0}}

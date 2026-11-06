@@ -1,122 +1,21 @@
-.profile-page {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    max-width: 480px;
-    margin: 0 auto;
-    padding: var(--space-xl) var(--space-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    box-shadow: var(--shadow-sm);
-    text-align: center;
-}
-
-.profile-page__avatar {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 72px;
-    height: 72px;
-    border: 2px solid var(--color-primary);
-    border-radius: 50%;
-    background: var(--color-primary-soft);
-    font-family: var(--font-heading);
-    font-size: 30px;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.profile-page__title { margin-top: var(--space-xs); }
-
-.profile-page__greeting {
-    font-size: 16px;
-    color: var(--color-text-muted);
-    overflow-wrap: anywhere;
-}
-
-.profile-page__actions {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-sm);
-    width: 100%;
-    max-width: 260px;
-    margin-top: var(--space-sm);
-}
-
-/* Блок Telegram */
-.profile-page__telegram {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    width: 100%;
-    margin-top: var(--space-sm);
-    padding-top: var(--space-md);
-    border-top: 1px dashed var(--color-border);
-}
-
-.profile-page__telegram-title { font-size: 18px; }
-
-.profile-page__telegram-text {
-    max-width: 320px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: var(--color-text-muted);
-}
-
-.profile-page__telegram-status {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 6px 14px;
-    border-radius: 999px;
-    background: var(--color-primary-soft);
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text);
-}
-
-.profile-page__telegram-status::before {
-    content: "";
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--color-primary-hover);
-}
-
-.profile-page__telegram-link {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--space-sm);
-    width: 100%;
-    max-width: 260px;
-}
-
-.profile-page__telegram-open { align-self: stretch; }
-
-.profile-page__telegram-connect {
-    width: 100%;
-    max-width: 260px;
-}
-
-.profile-page__telegram-hint {
-    font-size: 13px;
-    line-height: 1.5;
-    color: var(--color-text-muted);
-}
-
-.profile-page__telegram-error {
-    width: 100%;
-    padding: 10px 14px;
-    border-radius: var(--radius-sm);
-    background: var(--color-danger-bg);
-    color: var(--color-danger);
-    font-size: 14px;
-}
-
-@media (max-width: 560px) {
-    .profile-page { padding: var(--space-lg) var(--space-md); }
-}
+.profile-page{position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);max-width:480px;margin:0 auto;padding:var(--space-xl) var(--space-lg);background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);text-align:center;animation:profile-in .8s var(--ease) both}
+.profile-page::before{content:"";position:absolute;inset:0 0 auto 0;height:110px;background:linear-gradient(180deg,rgba(253,233,191,.85),transparent);pointer-events:none}
+.profile-page > *{position:relative}
+.profile-page__avatar{position:relative;display:flex;align-items:center;justify-content:center;width:84px;height:84px;border-radius:50%;background:var(--color-primary-soft);font-family:var(--font-heading);font-size:34px;font-weight:600;color:var(--color-text);box-shadow:0 10px 24px rgba(216,146,31,.25);animation:avatar-pop .8s .15s var(--ease-spring) both}
+.profile-page__avatar::before{content:"";position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(from 0deg,var(--color-primary),var(--color-primary-soft),var(--color-primary-hover),var(--color-primary));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 2px));animation:spinner-rotate 8s linear infinite}
+.profile-page__title{margin-top:var(--space-xs)}
+.profile-page__greeting{font-size:16px;color:var(--color-text-muted);overflow-wrap:anywhere}
+.profile-page__actions{display:flex;flex-direction:column;gap:var(--space-sm);width:100%;max-width:260px;margin-top:var(--space-sm)}
+.profile-page__telegram{display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);width:100%;margin-top:var(--space-sm);padding-top:var(--space-md);border-top:1px dashed var(--color-border);animation:profile-in .8s .3s var(--ease) both}
+.profile-page__telegram-title{font-size:18px}
+.profile-page__telegram-text{max-width:320px;font-size:14px;line-height:1.5;color:var(--color-text-muted)}
+.profile-page__telegram-status{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--color-primary-soft);font-size:14px;font-weight:600;color:var(--color-text)}
+.profile-page__telegram-status::before{content:"";width:8px;height:8px;border-radius:50%;background:#3fae6a;animation:ws-indicator-pulse 1.8s ease-in-out infinite}
+.profile-page__telegram-link{display:flex;flex-direction:column;align-items:center;gap:var(--space-sm);width:100%;max-width:260px;animation:profile-in .5s var(--ease) both}
+.profile-page__telegram-open{align-self:stretch}
+.profile-page__telegram-connect{width:100%;max-width:260px}
+.profile-page__telegram-hint{font-size:13px;line-height:1.5;color:var(--color-text-muted)}
+.profile-page__telegram-error{width:100%;padding:10px 14px;border-radius:var(--radius-sm);background:var(--color-danger-bg);color:var(--color-danger);font-size:14px}
+@keyframes profile-in{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+@keyframes avatar-pop{from{opacity:0;transform:scale(.4) rotate(-20deg)}to{opacity:1;transform:none}}
+@media (max-width:560px){.profile-page{padding:var(--space-lg) var(--space-md)}}
